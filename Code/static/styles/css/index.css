@@ -1,0 +1,85 @@
+#content {
+  margin-left: 20%;
+  margin-right: 20%;
+  background-color: #3E3B39;
+  padding: 30px 50px;
+  color: #DBEAFE;
+  min-height: 100%;
+}
+
+.intro-container {
+  display: flex;
+}
+.intro-container img {
+  width: 100%;
+}
+.intro-container .intro-left {
+  width: 30%;
+  margin-right: 10px;
+}
+.intro-container .intro-right {
+  display: flex;
+  flex-direction: column;
+  background-color: #312E2B;
+  width: 70%;
+  margin-left: 10px;
+  padding: 10px;
+}
+.intro-container .intro-right .title {
+  text-transform: uppercase;
+  margin: 10px;
+  align-self: center;
+  font-weight: 600;
+  justify-content: center;
+}
+.intro-container .intro-right .desc {
+  margin: 10px;
+}
+
+.button {
+  background-color: #0F491C;
+  text-decoration: none;
+  color: white;
+  width: fit-content;
+  padding: 15px;
+  margin: 10px;
+  border: 0px;
+  border-radius: 8px;
+}
+.button:hover {
+  opacity: 0.7;
+}
+
+.box-container {
+  margin: 30px 0px;
+  display: flex;
+  background-color: #1E1E1E;
+  padding: 30px 0px;
+  border: 0px;
+  border-radius: 8px;
+}
+.box-container .box-image {
+  width: 30%;
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+}
+.box-container .box-image .box-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+}
+.box-container .box-right {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  margin-left: 10px;
+  padding: 10px;
+}
+.box-container .box-right .title {
+  font-weight: 600;
+  justify-content: center;
+}
+
+/*# sourceMappingURL=index.css.map */

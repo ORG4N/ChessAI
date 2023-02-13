@@ -6,4 +6,4 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True  # Html automatically reloads on serv
 
 @app.route("/")
 def home():
-    return render_template("navbar.html")
+    return render_template("pages/index.html")
