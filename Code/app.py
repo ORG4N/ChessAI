@@ -7,3 +7,16 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True  # Html automatically reloads on serv
 @app.route("/")
 def home():
     return render_template("pages/index.html")
+    
+@app.route("/play")
+def play():
+    return render_template("pages/play.html")
+
+
+@app.route("/learn")
+def learn():
+    return render_template("pages/learn.html")
+
+@app.route("/profile")
+def profile():
+    return render_template("pages/profile.html")

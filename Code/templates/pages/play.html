@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %} Play Chess {% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/play.css') }}">
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div id="sidebar">
+    <div class="container">
+            <div class="button-wrapper">
+
+                <a href="#" class="button-item">
+                    <img src="static/images/white.png" alt="Black start" title="Black start"></img>
+                </a>
+
+                <a href="#" class="button-item">
+                    <img src="static/images/random.png" alt="Random start" title="Random start"></img>
+                </a>
+                <a href="#" class="button-item">
+                    <img src="static/images/black.png" alt="White start" title="White start"></img>
+                </a>
+            </div>
+
+            <div class="dropdown-wrapper">
+
+                <div class="dropdown-item dropdown">
+                    <div class="text"> Bot Difficulty </div>
+                    <div id="difficulty" class="text"> - </div>
+                    <a href="#" class="text dropdown-btn">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+                </div>
+
+                <div class="dropdown-item">
+                    <div class="text"> Game Time </div>
+                    <div id="difficulty" class="text"> - </div>
+                    <a href="#" class="text dropdown-btn">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <a href="#" class="button text" title="Play match" type="submit" form="game" value="Submit">
+                PLAY
+            </a>
+    </div>
+
+    <div class="container">
+        <div class="profile-wrapper">
+            <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar"> 
+            <div class="username"> ORGAN123</div>
+            <a href="#" class="settings-btn"> 
+                <i class="fa-solid fa-ellipsis fa-2xl"></i>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div id="board">
+    <!-- <img src="static/images/board.png" alt="Chess Board Graphic"></img> -->
+</div>
+
+{% endblock %}

@@ -16,6 +16,8 @@
 .intro-container .intro-left {
   width: 30%;
   margin-right: 10px;
+  display: flex;
+  align-self: center;
 }
 .intro-container .intro-right {
   display: flex;

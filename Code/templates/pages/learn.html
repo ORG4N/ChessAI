@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %} Play Chess {% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/learn.css') }}">
+{% endblock %}
+
+
+
+{% block content %}
+<h1> Learn </h1>
+{% endblock %}

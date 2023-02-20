@@ -100,3 +100,18 @@ html, body {
         }
     }
 }
+
+.button-nav{
+    background-color: #0F491C;
+    text-decoration: none;
+    color:white;
+    padding:15px 45px;
+    margin:10px;
+
+    border: 0px;
+    border-radius: 8px;
+
+    &:hover{
+        opacity: 0.7;
+    }
+}
