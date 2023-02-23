@@ -6,6 +6,12 @@ $nav-font-color: #D2CEB4;
 $nav-font-family: 'Work Sans', sans-serif;
 $nav-border-color: #0F491C;
 
+button{
+    border:none;
+    cursor:pointer;
+    background-color: transparent;
+}
+
 html, body {
     width: 100%;
     height: 100%;

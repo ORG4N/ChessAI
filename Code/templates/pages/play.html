@@ -5,6 +5,8 @@
 {% block head %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/play.css') }}">
+  <script src="{{url_for('static', filename='js/play.js')}}"></script>
+
 {% endblock %}
 
 
@@ -16,41 +18,67 @@
     <div class="container">
             <div class="button-wrapper">
 
-                <a href="#" class="button-item">
-                    <img src="static/images/white.png" alt="Black start" title="Black start"></img>
-                </a>
+                <button onclick="setStart(this)" class="button-item" id="white">
+                    <img src="static/images/black.png" alt="Black start" title="Black start"></img>
+                </button>
 
-                <a href="#" class="button-item">
+                <button onclick="setStart(this)" class="button-item" id="rand">
                     <img src="static/images/random.png" alt="Random start" title="Random start"></img>
-                </a>
-                <a href="#" class="button-item">
-                    <img src="static/images/black.png" alt="White start" title="White start"></img>
-                </a>
+                </button>
+                <button onclick="setStart(this)" class="button-item" id="black">
+                    <img src="static/images/white.png" alt="White start" title="White start"></img>
+                </button>
             </div>
 
             <div class="dropdown-wrapper">
+                <div>
+                    <div class="dropdown-item">
+                        <div class="text"> Bot Difficulty </div>
+                        <div id="difficulty-selected" class="text" value=""> - </div>
+                        <button onclick="Dropdown(this.id)" class="text dropdown-btn" id="difficulty">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
 
-                <div class="dropdown-item dropdown">
-                    <div class="text"> Bot Difficulty </div>
-                    <div id="difficulty" class="text"> - </div>
-                    <a href="#" class="text dropdown-btn">
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </a>
+                    <div class="dropdown-content hidden" id="difficulty-values">
+                        <button onclick="setDiff(this)" value="400">400</button>
+                        <button onclick="setDiff(this)" value="500">500</button>
+                        <button onclick="setDiff(this)" value="600">600</button>
+                        <button onclick="setDiff(this)" value="700">700</button>
+                        <button onclick="setDiff(this)" value="800">800</button>
+                        <button onclick="setDiff(this)" value="900">900</button>
+                        <button onclick="setDiff(this)" value="1000">1000</button>
+                        <button onclick="setDiff(this)" value="1100">1100</button>
+                        <button onclick="setDiff(this)" value="1200">1200</button>
+                        <button onclick="setDiff(this)" value="1300">1300</button>
+                        <button onclick="setDiff(this)" value="1400">1400</button>
+                        <button onclick="setDiff(this)" value="1500">1500</button>
+                    </div>
+
                 </div>
 
-                <div class="dropdown-item">
-                    <div class="text"> Game Time </div>
-                    <div id="difficulty" class="text"> - </div>
-                    <a href="#" class="text dropdown-btn">
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </a>
+                <div>
+                    <div class="dropdown-item">
+                        <div class="text"> Game Time </div>
+                        <div id="time-selected" class="text"> - </div>
+                        <button onclick="Dropdown(this.id)" class="text dropdown-btn" id="time">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+
+                    <div class="dropdown-content hidden" id="time-values">
+                        <button onclick="setTime(this)" value="1">1 min</button>
+                        <button onclick="setTime(this)" value="3">3 min</button>
+                        <button onclick="setTime(this)" value="5">5 min</button>
+                        <button onclick="setTime(this)" value="10">10 min</button>
+                    </div>
                 </div>
 
             </div>
 
-            <a href="#" class="button text" title="Play match" type="submit" form="game" value="Submit">
+            <button href="#" class="button" title="Play match">
                 PLAY
-            </a>
+            </button>
     </div>
 
     <div class="container">
