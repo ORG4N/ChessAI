@@ -16,69 +16,79 @@
 
 <div id="sidebar">
     <div class="container">
-            <div class="button-wrapper">
 
-                <button onclick="setStart(this)" class="button-item" id="white">
-                    <img src="static/images/black.png" alt="Black start" title="Black start"></img>
-                </button>
+        <div class="button-wrapper" id="side-box">
+            <input type="hidden" name="side" id="side-input" value="" autocomplete='off'> 
 
-                <button onclick="setStart(this)" class="button-item" id="rand">
-                    <img src="static/images/random.png" alt="Random start" title="Random start"></img>
-                </button>
-                <button onclick="setStart(this)" class="button-item" id="black">
-                    <img src="static/images/white.png" alt="White start" title="White start"></img>
-                </button>
-            </div>
-
-            <div class="dropdown-wrapper">
-                <div>
-                    <div class="dropdown-item">
-                        <div class="text"> Bot Difficulty </div>
-                        <div id="difficulty-selected" class="text" value=""> - </div>
-                        <button onclick="Dropdown(this.id)" class="text dropdown-btn" id="difficulty">
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                    </div>
-
-                    <div class="dropdown-content hidden" id="difficulty-values">
-                        <button onclick="setDiff(this)" value="400">400</button>
-                        <button onclick="setDiff(this)" value="500">500</button>
-                        <button onclick="setDiff(this)" value="600">600</button>
-                        <button onclick="setDiff(this)" value="700">700</button>
-                        <button onclick="setDiff(this)" value="800">800</button>
-                        <button onclick="setDiff(this)" value="900">900</button>
-                        <button onclick="setDiff(this)" value="1000">1000</button>
-                        <button onclick="setDiff(this)" value="1100">1100</button>
-                        <button onclick="setDiff(this)" value="1200">1200</button>
-                        <button onclick="setDiff(this)" value="1300">1300</button>
-                        <button onclick="setDiff(this)" value="1400">1400</button>
-                        <button onclick="setDiff(this)" value="1500">1500</button>
-                    </div>
-
-                </div>
-
-                <div>
-                    <div class="dropdown-item">
-                        <div class="text"> Game Time </div>
-                        <div id="time-selected" class="text"> - </div>
-                        <button onclick="Dropdown(this.id)" class="text dropdown-btn" id="time">
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                    </div>
-
-                    <div class="dropdown-content hidden" id="time-values">
-                        <button onclick="setTime(this)" value="1">1 min</button>
-                        <button onclick="setTime(this)" value="3">3 min</button>
-                        <button onclick="setTime(this)" value="5">5 min</button>
-                        <button onclick="setTime(this)" value="10">10 min</button>
-                    </div>
-                </div>
-
-            </div>
-
-            <button href="#" class="button" title="Play match">
-                PLAY
+            <button onclick="setStart(this)" class="button-item" id="black">
+                <img src="static/images/black.png" alt="Black start" title="Black start"></img>
             </button>
+
+            <button onclick="setStart(this)" class="button-item" id="rand">
+                <img src="static/images/random.png" alt="Random start" title="Random start"></img>
+            </button>
+            <button onclick="setStart(this)" class="button-item" id="white">
+                <img src="static/images/white.png" alt="White start" title="White start"></img>
+            </button>
+        </div>
+        <div class="dropdown-wrapper">
+            <div id="rating-box">
+                <div class="dropdown-item">
+                    <label for="difficulty" class="text"> Bot Difficulty </label>
+                    <input type="hidden" name="difficulty" id="difficulty-input" value="" autocomplete='off'> 
+
+                    <div id="difficulty-text" class="text"> - </div>
+                    <button onclick="dropdown(this.id)" class="text dropdown-btn" id="difficulty">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>
+
+                <div class="dropdown-content hidden" id="difficulty-values">
+                    <button onclick="setDiff(this)" value="400">400</button>
+                    <button onclick="setDiff(this)" value="500">500</button>
+                    <button onclick="setDiff(this)" value="600">600</button>
+                    <button onclick="setDiff(this)" value="700">700</button>
+                    <button onclick="setDiff(this)" value="800">800</button>
+                    <button onclick="setDiff(this)" value="900">900</button>
+                    <button onclick="setDiff(this)" value="1000">1000</button>
+                    <button onclick="setDiff(this)" value="1100">1100</button>
+                    <button onclick="setDiff(this)" value="1200">1200</button>
+                    <button onclick="setDiff(this)" value="1300">1300</button>
+                    <button onclick="setDiff(this)" value="1400">1400</button>
+                    <button onclick="setDiff(this)" value="1500">1500</button>
+                </div>
+            </div>
+
+            <div id="time-box">
+                <div class="dropdown-item">
+                    <label for="time" class="text"> Game Time </label>
+                    <input type="hidden" name="time" id="time-input" value="" autocomplete='off'> 
+
+                    <div id="time-text" class="text"> - </div>
+                    <button onclick="dropdown(this.id)" class="text dropdown-btn" id="time">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>
+
+                <div class="dropdown-content hidden" id="time-values">
+                    <button onclick="setTime(this)" value="1">1 min</button>
+                    <button onclick="setTime(this)" value="3">3 min</button>
+                    <button onclick="setTime(this)" value="5">5 min</button>
+                    <button onclick="setTime(this)" value="10">10 min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="validation-wrapper hidden" id="validate">
+            <div class="validation-text hidden" id="validate-side"> - You must select starting side!</div>
+            <div class="validation-text hidden" id="validate-rating"> - You must select opponent rating!</div>
+            <div class="validation-text hidden" id="validate-time"> - You must select game duration!</div>
+        </div>
+
+
+        <button onclick="submit()" class="button" title="Play match" id="submit">
+            PLAY
+        </button>
     </div>
 
     <div class="container">
