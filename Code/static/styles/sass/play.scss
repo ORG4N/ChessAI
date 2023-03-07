@@ -78,12 +78,10 @@ html, body {
         }
 
         .dropdown-content {
-            flex-direction: column;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
             background-color: #1E1E1E;
             opacity: 0.7;
-            z-index: 1;
-            height:90px;
         }
     
         .dropdown-content button {
@@ -102,7 +100,7 @@ html, body {
     }
 
     .show {
-        display:flex !important;
+        display:grid !important;
     }
 
     .hidden{

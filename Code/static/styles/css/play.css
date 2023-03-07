@@ -67,12 +67,10 @@ html, body {
   opacity: 0.4;
 }
 #sidebar .dropdown-wrapper .dropdown-content {
-  flex-direction: column;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   background-color: #1E1E1E;
   opacity: 0.7;
-  z-index: 1;
-  height: 90px;
 }
 #sidebar .dropdown-wrapper .dropdown-content button {
   color: #FFFFFF;
@@ -86,7 +84,7 @@ html, body {
   background-color: #0F491C;
 }
 #sidebar .show {
-  display: flex !important;
+  display: grid !important;
 }
 #sidebar .hidden {
   display: none !important;
