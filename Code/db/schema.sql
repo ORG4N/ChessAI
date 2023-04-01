@@ -26,20 +26,25 @@ CREATE TABLE BotMatch (
 
 CREATE TABLE ComputerParticipant (
     ParticipantID INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchID INTEGER,
     Username INTEGER NOT NULL,
     Color TEXT NOT NULL,
     Points  INTEGER NOT NULL,
 
-    FOREIGN KEY(Username) REFERENCES ComputerPlayer(Username)
+    FOREIGN KEY(Username) REFERENCES ComputerPlayer(Username),
+    FOREIGN KEY(MatchID) REFERENCES BotMatch(MatchID)
 );
 
 CREATE TABLE HumanParticipant (
     ParticipantID INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchID INTEGER,
     Username INTEGER NOT NULL,
     Color TEXT NOT NULL,
     Points  INTEGER NOT NULL,
 
-    FOREIGN KEY(Username) REFERENCES HumanPlayer(Username)
+    FOREIGN KEY(Username) REFERENCES HumanPlayer(Username),
+    FOREIGN KEY(MatchID) REFERENCES BotMatch(MatchID)
+
 );
 
 CREATE TABLE HumanPlayer(

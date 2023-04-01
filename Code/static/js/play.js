@@ -1,3 +1,7 @@
+window.onload = (event) => {
+    const board = Chessboard2('board')
+};
+
 // Simple function that will make a button stay highlighted when pressed and removes colour from previously selected buttons
 function setStart(element){
     document.getElementById("white").classList.remove("selected");
@@ -108,11 +112,12 @@ function validate(){
 }
 
 // Function that will call VALIDATE() and then determine whether a match is created or user is directed to modify inputs.
-function submit(){
+function submitForm(){
     const valid = validate();
 
     // If validation is correct then disable button
     if (valid == "valid"){
         document.getElementById("submit").toggleAttribute('disabled');
+        alert("Creating Game...");
     }
 }

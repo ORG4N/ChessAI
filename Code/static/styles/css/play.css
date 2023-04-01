@@ -1,31 +1,93 @@
 html, body {
+  margin: 0;
   overflow: hidden;
 }
 
 #content {
-  overflow: hidden;
+  display: flex;
+  flex-flow: row nowrap;
+  height: calc(100% - 104px);
+  min-height: calc(100% - 104px);
+}
+
+#board-container {
+  flex: 1 100%;
+  color: #DBEAFE;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 10px;
+}
+#board-container #board-wrapper {
+  display: flex;
+  align-self: stretch;
+  justify-content: center;
+}
+#board-container .alert {
+  padding: 20px;
+  margin: 5px;
+  color: #970020;
+  background-color: #ffd5de;
+}
+#board-container .match-heading {
+  display: flex;
+  background-color: #1E1E1E;
+  flex-shrink: 0;
+}
+#board-container .match-heading .player-info {
+  display: flex;
+  flex-flow: row nowrap;
+  width: 100%;
+  gap: 20px;
+}
+#board-container .match-heading .player-info .player-pic {
+  height: 56px;
+  width: 56px;
+}
+#board-container .match-heading .player-info .player-username {
+  align-self: center;
+  font-size: 24px;
+}
+#board-container .match-heading .time-control {
+  color: black;
+  padding: 0px 100px;
+  align-items: center;
+  align-content: center;
+  display: flex;
+  font-size: 24px;
+  border-left: 1px;
+  background-color: #D8281D;
 }
 
 #sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: space-between;
+  flex: 1 30%;
   background-color: #3E3B39;
-  width: 30%;
-  height: 100vh;
-  background-color: #3E3B39;
+  height: 100%;
   padding: 20px;
-  min-height: 100%;
   color: #DBEAFE;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   scrollbar-width: thin;
 }
 #sidebar .container {
   background-color: #312E2B;
   padding: 20px;
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   border: 0px;
   border-radius: 8px;
+}
+#sidebar .game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 #sidebar .button-wrapper {
   display: flex;
@@ -46,7 +108,6 @@ html, body {
   opacity: 0.4;
 }
 #sidebar .button-wrapper .button-item img {
-  height: 50%;
   width: 50%;
 }
 #sidebar .dropdown-wrapper {

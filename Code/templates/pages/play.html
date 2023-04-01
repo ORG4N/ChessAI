@@ -7,6 +7,15 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/play.css') }}">
   <script src="{{url_for('static', filename='js/play.js')}}"></script>
 
+  <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.css"
+      integrity="sha384-UAD3KzJ7THyDKHxQFPR2f3gGI2C/jdLP9AilbpnkGnf4b1PBvTJl6biezz0y9Vou"
+      crossorigin="anonymous">
+
+    <script src="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.js"
+        integrity="sha384-xlTkh4p+HAppJTBKFmgIxsCZs94kwA015Hf5aW6tQg5/DYwnfdd1Tr+1Hvh9c4Re"
+        crossorigin="anonymous"></script>
+
 {% endblock %}
 
 
@@ -15,59 +24,60 @@
 
 
 <div id="sidebar">
-    <div class="container">
+    <form class="container" method="post" id="match-form">
+        <div class="game-info">
+            <div class="button-wrapper" id="side-box">
+                <input type="hidden" name="side" id="side-input" value="" autocomplete='off'> 
 
-        <div class="button-wrapper" id="side-box">
-            <input type="hidden" name="side" id="side-input" value="" autocomplete='off'> 
+                <button type="button" onclick="setStart(this)" class="button-item" id="black">
+                    <img src="static/images/black.png" alt="Black start" title="Black start"></img>
+                </button>
 
-            <button onclick="setStart(this)" class="button-item" id="black">
-                <img src="static/images/black.png" alt="Black start" title="Black start"></img>
-            </button>
-
-            <button onclick="setStart(this)" class="button-item" id="rand">
-                <img src="static/images/random.png" alt="Random start" title="Random start"></img>
-            </button>
-            <button onclick="setStart(this)" class="button-item" id="white">
-                <img src="static/images/white.png" alt="White start" title="White start"></img>
-            </button>
-        </div>
-        <div class="dropdown-wrapper">
-            <div id="rating-box">
-                <div class="dropdown-item">
-                    <label for="difficulty" class="text"> Bot Difficulty </label>
-                    <input type="hidden" name="difficulty" id="difficulty-input" value="" autocomplete='off'> 
-
-                    <div id="difficulty-text" class="text"> - </div>
-                    <button onclick="dropdown(this.id)" class="text dropdown-btn" id="difficulty">
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                </div>
-
-                <div class="dropdown-content hidden" id="difficulty-values">
-
-                    {% for bot in bots %}
-                    <button onclick="setDiff(this)" value="{{ bot['Rating'] }}">{{ bot['Rating'] }}</button>
-                    {% endfor %}
-
-                </div>
+                <button type="button" onclick="setStart(this)" class="button-item" id="rand">
+                    <img src="static/images/random.png" alt="Random start" title="Random start"></img>
+                </button>
+                <button type="button" onclick="setStart(this)" class="button-item" id="white">
+                    <img src="static/images/white.png" alt="White start" title="White start"></img>
+                </button>
             </div>
+            <div class="dropdown-wrapper">
+                <div id="rating-box">
+                    <div class="dropdown-item">
+                        <label for="difficulty" class="text"> Bot Rating </label>
+                        <input type="hidden" name="difficulty" id="difficulty-input" value="" autocomplete='off'> 
 
-            <div id="time-box">
-                <div class="dropdown-item">
-                    <label for="time" class="text"> Game Time </label>
-                    <input type="hidden" name="time" id="time-input" value="" autocomplete='off'> 
+                        <div id="difficulty-text" class="text"> - </div>
+                        <button type="button" onclick="dropdown(this.id)" class="text dropdown-btn" id="difficulty">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
 
-                    <div id="time-text" class="text"> - </div>
-                    <button onclick="dropdown(this.id)" class="text dropdown-btn" id="time">
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
+                    <div class="dropdown-content hidden" id="difficulty-values">
+
+                        {% for bot in bots %}
+                        <button type="button"  onclick="setDiff(this)" value="{{ bot['Rating'] }}">{{ bot['Rating'] }}</button>
+                        {% endfor %}
+
+                    </div>
                 </div>
 
-                <div class="dropdown-content hidden" id="time-values">
+                <div id="time-box">
+                    <div class="dropdown-item">
+                        <label for="time" class="text"> Game Time </label>
+                        <input type="hidden" name="time" id="time-input" value="" autocomplete='off'> 
 
-                    {% for time in times %}
-                    <button onclick="setTime(this)" value="{{ time['Value'] }}">{{ time['Name'] }}</button>
-                    {% endfor %}
+                        <div id="time-text" class="text"> - </div>
+                        <button type="button" onclick="dropdown(this.id)" class="text dropdown-btn" id="time">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+
+                    <div class="dropdown-content hidden" id="time-values">
+
+                        {% for time in times %}
+                        <button type="button" onclick="setTime(this)" value="{{ time['Value'] }}">{{ time['Name'] }}</button>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -76,13 +86,18 @@
             <div class="validation-text hidden" id="validate-side"> - You must select starting side!</div>
             <div class="validation-text hidden" id="validate-rating"> - You must select opponent rating!</div>
             <div class="validation-text hidden" id="validate-time"> - You must select game duration!</div>
+
+            {% for message in get_flashed_messages() %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+
         </div>
 
 
-        <button onclick="submit()" class="button" title="Play match" id="submit">
+        <button type="button" onclick="submitForm(event)" class="button" title="Play match" id="submit">
             PLAY
         </button>
-    </div>
+    </form>
 
     <div class="container">
         <div class="profile-wrapper">
@@ -96,8 +111,27 @@
 
 </div>
 
-<div id="board">
-    <!-- <img src="static/images/board.png" alt="Chess Board Graphic"></img> -->
+<div id="board-container">
+    
+    <div class="match-heading" id="top-player">
+        <div class="player-info">
+            <img class="player-pic" src="static/images/avatar_placeholder.png"> 
+            <div class="player-username">Black</div>
+        </div>
+        <div class="time-control">00:00 </div>
+    </div>
+
+    <div id="board-wrapper">
+        <div id="board" style="width: 40%;"></div>
+    </div>
+
+    <div class="match-heading" id="bottom-player">
+        <div class="player-info">
+            <img class="player-pic" src="static/images/avatar_placeholder.png"> 
+            <div class="player-username">White</div>
+        </div>
+        <div class="time-control">00:00 </div>
+    </div>
 </div>
 
 {% endblock %}
