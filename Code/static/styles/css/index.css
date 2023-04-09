@@ -1,3 +1,7 @@
+body {
+  background-image: url(../../images/checkbg.png);
+}
+
 #content {
   margin-left: 20%;
   margin-right: 20%;
@@ -12,6 +16,8 @@
 }
 .intro-container img {
   width: 100%;
+  border: 0px;
+  border-radius: 8px;
 }
 .intro-container .intro-left {
   width: 30%;
@@ -26,6 +32,8 @@
   width: 70%;
   margin-left: 10px;
   padding: 10px;
+  border: 0px;
+  border-radius: 8px;
 }
 .intro-container .intro-right .title {
   text-transform: uppercase;
@@ -59,6 +67,7 @@
   padding: 30px 0px;
   border: 0px;
   border-radius: 8px;
+  color: #FFFFFF;
 }
 .box-container .box-image {
   width: 30%;
@@ -71,6 +80,7 @@
   justify-content: center;
   align-items: center;
   opacity: 1;
+  color: #D2CEB4;
 }
 .box-container .box-right {
   display: flex;

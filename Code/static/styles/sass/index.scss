@@ -1,7 +1,13 @@
+body{
+    background-image: url(../../images/checkbg.png);
+}
+
 #content{
     margin-left: 20%;
     margin-right: 20%;
+
     background-color: #3E3B39;
+
     padding:30px 50px;
     color:#DBEAFE;
     min-height: 100%;
@@ -13,6 +19,8 @@
 
     img{
         width:100%;
+        border: 0px;
+        border-radius: 8px;
     }
 
     .intro-left{
@@ -29,6 +37,9 @@
         width:70%;
         margin-left:10px;
         padding:10px;
+
+        border: 0px;
+        border-radius: 8px;
 
         .title{
             text-transform: uppercase;
@@ -70,6 +81,8 @@
     border: 0px;
     border-radius: 8px;
 
+    color: #FFFFFF;
+
     .box-image{
         width:30%;
         margin-right:10px;
@@ -82,6 +95,7 @@
             justify-content: center;
             align-items: center;
             opacity:1;
+            color: #D2CEB4;
         }
     }
 

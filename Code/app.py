@@ -42,6 +42,9 @@ def play():
 
     return render_template("pages/play.html", bots=computer_players, times=time_control)
 
+@app.route("/account")
+def account():
+    return render_template("pages/account.html")
 
 @app.route("/learn")
 def learn():

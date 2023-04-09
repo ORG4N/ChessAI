@@ -1,0 +1,157 @@
+<!-- Extend base template - layout.html is parent and index.html is child -->
+{% extends "layout.html" %}
+
+<!-- Update title block-->
+{% block title %} Login {% endblock %}
+
+<!-- Reuse head html from layout.html and concat index.css stylesheet-->
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/account.css') }}">
+  <script src="{{url_for('static', filename='js/account.js')}}"></script>
+{% endblock %}
+
+<!-- Navbar defined within layout.html will be drawn within index.html too -->
+<!-- Note: unnecessary to write this code but it is here for readability. -->
+{% block navbar %}
+  {{ super() }}
+{% endblock %}
+
+<!-- Now we create the Main Content of the index.html page-->
+
+{% block content %}
+
+<div class="box-container">
+  <div class="box-wrapper">
+    <button type="button" onclick="dropdown(this.id)" class="row" id="login">
+      <div class="item">
+        <div class="box-icon" title="Login">
+          <i class="fa-solid fa-door-open fa-2x fa-fw"></i>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="box-header">
+          <div class="title"> Login </div>
+          <div class="desc"> Sign-in to an existing account.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="box-icon" title="Show more">
+          <i class="fa-solid fa-chevron-down" id="login-chevron"></i>
+        </div>
+      </div>
+    </button>
+
+    <div id="login-dropdown" class="row hidden col">
+
+      <hr>
+
+      <form class="form-container" autocomplete="off">
+        <div class="form-wrapper">
+
+          <div class="row">
+            <div class="item">
+              <div class="box-icon">
+                <i class="fa-solid fa-user fa-sm"></i>
+                <label for="login-username">Username:</label>
+              </div>
+            </div>
+
+            <div class="item">
+              <input type="text" id="login-username" name="login-username"  placeholder="..." required>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="item">
+              <div class="box-icon">
+                <i class="fa-solid fa-lock fa-sm"></i>
+                <label for="login-password">Password:</label>
+              </div>
+            </div>
+
+            <div class="item">
+              <input type="password" id="login-password" name="login-password" placeholder="..." required>
+              <button type="button" onclick="togglePassword(this)" title="View password">
+                <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-1"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <a href="#" class="helper-text">
+        Forgot password?
+      </a>
+
+      <button class="form-container btn-submit" type="button" onclick="" title="Login" id="login-submit">
+            Login
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="box-container">
+  <div class="box-wrapper">
+    <button type="button" onclick="dropdown(this.id)" class="row" id="create">
+
+      <div class="item">
+        <div class="box-icon" title="Create Account">
+          <i class="fa-solid fa-square-plus fa-2x fa-fw"></i>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="box-header">
+          <div class="title"> Create Account </div>
+          <div class="desc"> Enter details to create a personal account.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="box-icon" title="Show more">
+          <i class="fa-solid fa-chevron-down" id="create-chevron"></i>
+        </div>
+      </div>
+    </button>
+
+    <div id="create-dropdown" class="row hidden">
+
+
+
+    </div>
+
+  </div>
+</div>
+
+<div class="box-container">
+  <a href="/play" class="box-wrapper">
+    <div class="row">
+
+      <div class="item">
+        <div class="box-icon" title="Guest">
+          <i class="fa-solid fa-user-ninja fa-2x fa-fw"></i>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="box-header">
+          <div class="title"> Continue as Guest </div>
+          <div class="desc"> Play Chess using Guest account. Match history and statistics are not recorded.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="box-icon" title="Continue as Guest">
+          <i class="fa-solid fa-arrow-right-long"></i>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
+
+{% endblock %}
