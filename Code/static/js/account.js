@@ -1,5 +1,6 @@
 // Simple function to show dropdown
 function dropdown(id){
+
     const dropdown_element = id + "-dropdown";
     const chevron = id + "-chevron";
 

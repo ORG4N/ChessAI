@@ -44,11 +44,11 @@
       </div>
     </button>
 
-    <div id="login-dropdown" class="row hidden col">
+    <form id="login-dropdown" class="row hidden col" autocomplete="off">
 
       <hr>
 
-      <form class="form-container" autocomplete="off">
+      <div class="form-container">
         <div class="form-wrapper">
 
           <div class="row">
@@ -80,7 +80,7 @@
             </div>
           </div>
         </div>
-      </form>
+      </div>
 
       <a href="#" class="helper-text">
         Forgot password?
@@ -90,7 +90,7 @@
             Login
       </button>
 
-    </div>
+    </form>
 
   </div>
 </div>
@@ -119,11 +119,66 @@
       </div>
     </button>
 
-    <div id="create-dropdown" class="row hidden">
+    <form id="create-dropdown" class="row hidden col" autocomplete="off">
 
+      <hr>
 
+      <div class="form-container">
+        <div class="form-wrapper">
 
-    </div>
+          <div class="row">
+            <div class="item">
+              <div class="box-icon">
+                <i class="fa-solid fa-user fa-sm"></i>
+                <label for="create-username">Username:</label>
+              </div>
+            </div>
+
+            <div class="item">
+              <input type="text" id="create-username" name="login-username"  placeholder="..." required>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="item">
+              <div class="box-icon">
+                <i class="fa-solid fa-lock fa-sm"></i>
+                <label for="create-password-1">Password:</label>
+              </div>
+            </div>
+
+            <div class="item">
+              <input type="password" id="create-password-1" name="create-password-1" placeholder="..." required>
+              <button type="button" onclick="togglePassword(this)" title="View password">
+                <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="item">
+              <div class="box-icon">
+                <i class="fa-solid fa-lock fa-sm"></i>
+                <label for="create-password-2">Confirm Password:</label>
+              </div>
+            </div>
+
+            <div class="item">
+              <input type="password" id="create-password-2" name="create-password-2" placeholder="..." required>
+              <button type="button" onclick="togglePassword(this)" title="View password">
+                <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-3"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="form-container btn-submit" type="button" onclick="" title="Login" id="login-submit">
+            Create Account
+      </button>
+
+    </form>
 
   </div>
 </div>
