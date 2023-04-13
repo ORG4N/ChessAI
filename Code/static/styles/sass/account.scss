@@ -23,6 +23,11 @@ body{
 button{
     text-decoration:none;
     color:#FFFFFF;
+
+    &:disabled{
+        background-color: #0b3314 !important;
+        opacity: 0.8;
+    }
 }
 
 a{
@@ -42,10 +47,10 @@ hr{
 
 .helper-text{
     text-align: end;
-    text-decoration: underline;
     color: #FFFFFF;
     font-size: small;
 }
+
 
 .btn-submit{
     background-color: #0F491C !important;

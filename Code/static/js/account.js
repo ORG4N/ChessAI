@@ -1,3 +1,129 @@
+// On window load, add event listener to call prevent default when button is clicked to submit forms
+window.addEventListener('load', function () {
+
+    const loginForm = document.getElementById("login-dropdown");
+    loginForm.addEventListener("submit", function(event) {
+
+        // Stop page refresh
+        event.preventDefault();
+    });
+
+    const createForm = document.getElementById("create-dropdown");
+    createForm.addEventListener("submit", function(event) {
+        
+        // Stop page refresh
+        event.preventDefault();
+
+        /*
+        // Get values.
+        const username = event.currentTarget.create_username.value;
+        const password = event.currentTarget.create_password1.value;
+        const password_confirm = event.currentTarget.create_password2.value;
+
+        // Check if PASSWORDS MATCH
+        if (password != password_confirm){
+            alert("Passwords do not match!");
+            return "no match";
+        }
+        */
+    });
+
+    const createFormFields = ["create-username", "create-password-1", "create-password-2"];
+
+    for (var i=0; i<createFormFields.length; i++){
+        const field = document.getElementById(createFormFields[i]);
+
+        field.addEventListener("input", function(event) {
+            const inputValue = event.target.value;                              // Username field value
+            const minLen = parseInt(event.target.attributes.minlength.value);   // minLen taken from html
+            const maxLen = parseInt(event.target.attributes.maxlength.value);   // maxLen taken from html
+            
+            // For USERNAME field only
+            if(event.target.id == "create-username"){
+
+                // Forbidden char values for USERNAME and PASSWORD.
+                const forbidden =  /[`!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/;
+
+                // If USERNAME contains SPECIAL CHARACTERS or WHITE SPACE
+                if(forbidden.test(inputValue) || /\s/.test(inputValue)){
+                    const m = "Username cannot contain special character characters or white space. Please only use letters and numbers.";
+                    message(field, m);
+                    return false;
+                }
+            }
+
+            if(/\s/.test(inputValue)){
+                const m = "Field cannot contain white space. Please only use letters, numbers, and underscores.";
+                message(field, m);
+                return false;
+            }
+
+            // If INPUT is less than N chars long
+            if(inputValue.length < minLen ){
+                const m = "Please use atleast " + minLen + " characters.";
+                message(field, m);
+                return false;
+            }
+
+            // If INPUT is greater than N chars long
+            if(inputValue.length > maxLen ){
+                const m = "Please use less than " + maxLen + " characters.";
+                message(field, m);
+                return false;
+            }
+
+            else{
+                field.setCustomValidity("");
+                field.reportValidity(); 
+            }
+
+        });
+    }
+
+    /*
+    const username_input = document.getElementById("create-username");
+    username_input.addEventListener("input", function(event) {
+
+        const username = event.target.value;                                // Username field value
+        const minLen = parseInt(event.target.attributes.minlength.value);   // minLen taken from html
+        const maxLen = parseInt(event.target.attributes.maxlength.value);   // maxLen taken from html
+        const forbidden =  /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;       // Forbidden char values for USERNAME and PASSWORD.
+
+        // If USERNAME contains SPECIAL CHARACTERS or WHITE SPACE
+        if(forbidden.test(username) || /\s/.test(username)){
+            const m = "Username cannot contain special character characters or white space. Please only use letters and numbers.";
+            message(username_input, m)
+            return false;
+        }
+
+        // If USERNAME is less than N chars long
+        if(username.length < minLen ){
+            const m = "Please use atleast " + minLen + " characters.";
+            message(username_input, m)
+            return false;
+        }
+
+        // If USERNAME is greater than N chars long
+        if(username.length > maxLen ){
+            const m = "Please use less than " + maxLen + " characters.";
+            message(username_input, m)
+            return false;
+        }
+
+        else{
+            username_input.setCustomValidity("");
+            username_input.reportValidity(); 
+        }
+
+    });*/
+  
+})
+
+function message(input, text){
+    input.setCustomValidity(text);
+    input.reportValidity();
+}
+
 // Simple function to show dropdown
 function dropdown(id){
 

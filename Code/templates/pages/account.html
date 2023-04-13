@@ -55,12 +55,12 @@
             <div class="item">
               <div class="box-icon">
                 <i class="fa-solid fa-user fa-sm"></i>
-                <label for="login-username">Username:</label>
+                <label for="login_username">Username:</label>
               </div>
             </div>
 
             <div class="item">
-              <input type="text" id="login-username" name="login-username"  placeholder="..." required>
+              <input type="text" id="login-username" name="login_username"  placeholder="..." required>
             </div>
           </div>
           
@@ -68,12 +68,12 @@
             <div class="item">
               <div class="box-icon">
                 <i class="fa-solid fa-lock fa-sm"></i>
-                <label for="login-password">Password:</label>
+                <label for="login_password">Password:</label>
               </div>
             </div>
 
             <div class="item">
-              <input type="password" id="login-password" name="login-password" placeholder="..." required>
+              <input type="password" id="login-password" name="login_password" placeholder="..." required>
               <button type="button" onclick="togglePassword(this)" title="View password">
                 <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-1"></i>
               </button>
@@ -86,7 +86,7 @@
         Forgot password?
       </a>
 
-      <button class="form-container btn-submit" type="button" onclick="" title="Login" id="login-submit">
+      <button class="form-container btn-submit" type="submit" onclick="login(this)" title="Login" id="login-submit">
             Login
       </button>
 
@@ -130,12 +130,12 @@
             <div class="item">
               <div class="box-icon">
                 <i class="fa-solid fa-user fa-sm"></i>
-                <label for="create-username">Username:</label>
+                <label for="create_username">Username:</label>
               </div>
             </div>
 
             <div class="item">
-              <input type="text" id="create-username" name="login-username"  placeholder="..." required>
+              <input type="text" id="create-username" name="create_username"  placeholder="..." required minlength="4" maxlength="20">
             </div>
           </div>
           
@@ -143,12 +143,12 @@
             <div class="item">
               <div class="box-icon">
                 <i class="fa-solid fa-lock fa-sm"></i>
-                <label for="create-password-1">Password:</label>
+                <label for="create_password1">Password:</label>
               </div>
             </div>
 
             <div class="item">
-              <input type="password" id="create-password-1" name="create-password-1" placeholder="..." required>
+              <input type="password" id="create-password-1" name="create_password1" placeholder="..." required minlength="6" maxlength="20">
               <button type="button" onclick="togglePassword(this)" title="View password">
                 <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-2"></i>
               </button>
@@ -159,12 +159,12 @@
             <div class="item">
               <div class="box-icon">
                 <i class="fa-solid fa-lock fa-sm"></i>
-                <label for="create-password-2">Confirm Password:</label>
+                <label for="create_password2">Confirm Password:</label>
               </div>
             </div>
 
             <div class="item">
-              <input type="password" id="create-password-2" name="create-password-2" placeholder="..." required>
+              <input type="password" id="create-password-2" name="create_password2" placeholder="..." required minlength="6" maxlength="20">
               <button type="button" onclick="togglePassword(this)" title="View password">
                 <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-3"></i>
               </button>
@@ -174,7 +174,15 @@
         </div>
       </div>
 
-      <button class="form-container btn-submit" type="button" onclick="" title="Login" id="login-submit">
+      <div class="helper-text">
+          <div> Password or username cannot contain white space.</div>
+          <div> Username contains only letters, underscore, and numbers.</div>
+          <div> Username between 4 and 20 characters long. </div>
+          <div> Password between 6 and 20 characters long. </div>
+
+      </div>
+
+      <button class="form-container btn-submit" type="submit" title="Login" id="login-submit">
             Create Account
       </button>
 
