@@ -14,7 +14,6 @@ window.addEventListener('load', function () {
         // Stop page refresh
         event.preventDefault();
 
-        /*
         // Get values.
         const username = event.currentTarget.create_username.value;
         const password = event.currentTarget.create_password1.value;
@@ -23,9 +22,17 @@ window.addEventListener('load', function () {
         // Check if PASSWORDS MATCH
         if (password != password_confirm){
             alert("Passwords do not match!");
+            
             return "no match";
         }
-        */
+        else{
+            // Create user POST.
+            // Validate on backend.
+            // Check if user exists.
+            alert("Create user");
+            event.currentTarget.submit();
+        }
+
     });
 
     const createFormFields = ["create-username", "create-password-1", "create-password-2"];
@@ -79,43 +86,6 @@ window.addEventListener('load', function () {
 
         });
     }
-
-    /*
-    const username_input = document.getElementById("create-username");
-    username_input.addEventListener("input", function(event) {
-
-        const username = event.target.value;                                // Username field value
-        const minLen = parseInt(event.target.attributes.minlength.value);   // minLen taken from html
-        const maxLen = parseInt(event.target.attributes.maxlength.value);   // maxLen taken from html
-        const forbidden =  /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;       // Forbidden char values for USERNAME and PASSWORD.
-
-        // If USERNAME contains SPECIAL CHARACTERS or WHITE SPACE
-        if(forbidden.test(username) || /\s/.test(username)){
-            const m = "Username cannot contain special character characters or white space. Please only use letters and numbers.";
-            message(username_input, m)
-            return false;
-        }
-
-        // If USERNAME is less than N chars long
-        if(username.length < minLen ){
-            const m = "Please use atleast " + minLen + " characters.";
-            message(username_input, m)
-            return false;
-        }
-
-        // If USERNAME is greater than N chars long
-        if(username.length > maxLen ){
-            const m = "Please use less than " + maxLen + " characters.";
-            message(username_input, m)
-            return false;
-        }
-
-        else{
-            username_input.setCustomValidity("");
-            username_input.reportValidity(); 
-        }
-
-    });*/
   
 })
 

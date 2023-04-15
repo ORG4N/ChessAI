@@ -42,8 +42,41 @@ def play():
 
     return render_template("pages/play.html", bots=computer_players, times=time_control)
 
-@app.route("/account")
+@app.route("/account", methods=('GET', 'POST'))
 def account():
+
+    if request.method == 'POST':
+        username = request.form['create_username']
+        password1 = request.form['create_password1']
+        password2 = request.form['create_password2']
+
+        if not username:
+            flash('Username is required!')
+
+        elif not password1:
+            flash('Password is required!')
+
+        elif not password2:
+            flash('Password confirmation is required!')
+
+        else:
+            if password1 == password2:
+                conn = get_db_connection()
+                conn.execute('INSERT INTO HumanPlayer (Username, Password, Online, Biography, Picture, Wins, Losses, Draws) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                            (username, password1, "Currently online", "No biography", "None", 0, 0, 0))
+                conn.commit()
+                conn.close()
+                return redirect(url_for('learn'))                
+
+        #allowed = string.letters + string.digits + '_'
+        #if not all(char in allowed for char in username):
+        #    flash('Username contains special characters!')
+
+        #if any(username.isspace()):
+        #    flash('Cannot contain whitespace!')
+
+        
+
     return render_template("pages/account.html")
 
 @app.route("/learn")
