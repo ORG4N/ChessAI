@@ -86,17 +86,19 @@
             <div class="validation-text hidden" id="validate-side"> - You must select starting side!</div>
             <div class="validation-text hidden" id="validate-rating"> - You must select opponent rating!</div>
             <div class="validation-text hidden" id="validate-time"> - You must select game duration!</div>
-
-            {% for message in get_flashed_messages() %}
-                <div class="alert">{{ message }}</div>
-            {% endfor %}
-
         </div>
 
 
-        <button type="button" onclick="submitForm(event)" class="button" title="Play match" id="submit">
+        <button type="submit" class="button" title="Play match" id="submitBtn">
             PLAY
         </button>
+
+        <div class="validation-wrapper hidden" id="validate-flask">
+            {% for message in get_flashed_messages() %}
+                <div class="validation-text">{{ message }}</div>
+            {% endfor %}
+        </div>
+
     </form>
 
     <div class="container">

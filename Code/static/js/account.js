@@ -1,11 +1,23 @@
 // On window load, add event listener to call prevent default when button is clicked to submit forms
 window.addEventListener('load', function () {
+ 
+    // If dropdowns were open before refresh then reopen them.
+    dropdownOnload("login");
+    dropdownOnload("create");
+
+    // Display flash messages div if theres children otherwise hide it.
+    const flashes = document.getElementById("validate-flask");
+    if (flashes.children.length != 0){
+        flashes.classList.remove("hidden");
+    }
 
     const loginForm = document.getElementById("login-dropdown");
     loginForm.addEventListener("submit", function(event) {
 
         // Stop page refresh
-        event.preventDefault();
+        //event.preventDefault();
+
+        event.currentTarget.submit();
     });
 
     const createForm = document.getElementById("create-dropdown");
@@ -14,8 +26,7 @@ window.addEventListener('load', function () {
         // Stop page refresh
         event.preventDefault();
 
-        // Get values.
-        const username = event.currentTarget.create_username.value;
+        // Get password values.
         const password = event.currentTarget.create_password1.value;
         const password_confirm = event.currentTarget.create_password2.value;
 
@@ -103,17 +114,27 @@ function dropdown(id){
     document.getElementById(dropdown_element).classList.toggle("show");
     document.getElementById(dropdown_element).classList.toggle("hidden");
 
-
     if (document.getElementById(dropdown_element).classList.contains("show")){
         document.getElementById(chevron).classList.remove("fa-chevron-down");
         document.getElementById(chevron).classList.add("fa-chevron-up");
+        localStorage.setItem(id, "show");
+
     }
 
     else {
         document.getElementById(chevron).classList.remove("fa-chevron-up");
         document.getElementById(chevron).classList.add("fa-chevron-down");
+        localStorage.setItem(id, "hide");
     }
+}
 
+// Open dropdowns on page load
+function dropdownOnload(id){
+    const value = localStorage.getItem(id);
+
+    if (value == "show"){
+        dropdown(id);
+    }
 }
 
 // Hide password text or display password text based on clicking eye icon.

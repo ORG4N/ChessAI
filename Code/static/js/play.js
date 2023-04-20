@@ -1,6 +1,32 @@
-window.onload = (event) => {
+window.addEventListener('load', function () {
+    
+    // Display flash messages div if theres children otherwise hide it.
+    const flashes = document.getElementById("validate-flask");
+    if (flashes.children.length != 0){
+        flashes.classList.remove("hidden");
+    }
+    
     const board = Chessboard2('board')
-};
+
+    // Function that will call VALIDATE() and then determine whether a match is created or user is directed to modify inputs.
+    const matchForm = document.getElementById("match-form");
+    matchForm.addEventListener("submit", function(event) {
+
+        // Stop page refresh
+        event.preventDefault();
+        console.log(event);
+
+        const valid = validate();
+
+        // If validation is correct then disable button
+        if (valid == "valid"){
+            document.getElementById("submitBtn").toggleAttribute('disabled');
+            alert("Creating Game...");
+            event.target.submit();
+        }
+    });
+
+})
 
 // Simple function that will make a button stay highlighted when pressed and removes colour from previously selected buttons
 function setStart(element){
@@ -109,15 +135,4 @@ function validate(){
     }
 
     return "valid"
-}
-
-// Function that will call VALIDATE() and then determine whether a match is created or user is directed to modify inputs.
-function submitForm(){
-    const valid = validate();
-
-    // If validation is correct then disable button
-    if (valid == "valid"){
-        document.getElementById("submit").toggleAttribute('disabled');
-        alert("Creating Game...");
-    }
 }

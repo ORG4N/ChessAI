@@ -51,6 +51,12 @@ hr{
     font-size: small;
 }
 
+.validation-wrapper{
+    .validation-text{
+        color:red;
+        font-size: 12px;
+    }
+}
 
 .btn-submit{
     background-color: #0F491C !important;
