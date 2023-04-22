@@ -90,6 +90,16 @@
             Login
       </button>
 
+      <div class="validation-wrapper hidden" id="validate-flask-login">
+        {% with messages = get_flashed_messages(category_filter=["login"]) %}
+        {% if messages %}
+        {%- for msg in messages %}
+            <div class="validation-text">{{ msg }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+      </div>
+
     </form>
 
   </div>
@@ -185,10 +195,14 @@
             Create Account
       </button>
 
-      <div class="validation-wrapper hidden" id="validate-flask">
-        {% for message in get_flashed_messages() %}
-            <div class="validation-text">{{ message }}</div>
+      <div class="validation-wrapper hidden" id="validate-flask-create">
+        {% with messages = get_flashed_messages(category_filter=["register"]) %}
+        {% if messages %}
+        {%- for msg in messages %}
+            <div class="validation-text">{{ msg }}</div>
         {% endfor %}
+        {% endif %}
+        {% endwith %}
       </div>
 
     </form>

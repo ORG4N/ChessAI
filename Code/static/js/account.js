@@ -6,9 +6,14 @@ window.addEventListener('load', function () {
     dropdownOnload("create");
 
     // Display flash messages div if theres children otherwise hide it.
-    const flashes = document.getElementById("validate-flask");
-    if (flashes.children.length != 0){
-        flashes.classList.remove("hidden");
+    const flashes_login = document.getElementById("validate-flask-login");
+    if (flashes_login.children.length != 0){
+        flashes_login.classList.remove("hidden");
+    }
+
+    const flashes_register = document.getElementById("validate-flask-create");
+    if (flashes_register.children.length != 0){
+        flashes_register.classList.remove("hidden");
     }
 
     const loginForm = document.getElementById("login-dropdown");
@@ -32,9 +37,10 @@ window.addEventListener('load', function () {
 
         // Check if PASSWORDS MATCH
         if (password != password_confirm){
-            alert("Passwords do not match!");
-            
-            return "no match";
+
+            const field = document.getElementById("create-password-2");
+            const m = "Passwords do not match.";
+            message(field, m);
         }
         else{
             // Create user POST.

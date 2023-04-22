@@ -1,11 +1,17 @@
 from flask import render_template, Flask, request, url_for, flash, redirect
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import sqlite3, os
 from passlib.hash import pbkdf2_sha256
+from models import User
+
+
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True  # Html automatically reloads on server when changes are made and page is refreshed
 app.config['SECRET_KEY'] = os.urandom(24).hex()
 
+login_manager = LoginManager(app)
+login_manager.login_view = "home"
 
 
 def get_db_connection():
@@ -13,7 +19,17 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+@login_manager.user_loader
+def load_user(user_id):
+   conn = get_db_connection()
+   user = conn.execute("SELECT * from HumanPlayer where PlayerID = (?)", [user_id]).fetchone()
+   conn.close()
 
+   if user is None:
+      return None
+   
+   else:
+      return User(int(user[0]), user[1], user[2], user[3], user[4], user[5], user[6], user[7], user[8], user[9])
 
 @app.route("/")
 def home():
@@ -44,6 +60,10 @@ def play():
 
 @app.route("/account")
 def account():  
+
+    if current_user.is_authenticated:
+        return redirect(url_for('profile'))
+    
     return render_template("pages/account.html")
 
 # Route to handle LOGIN post requests.
@@ -55,30 +75,43 @@ def login():
         password = request.form['login_password']
 
         if not username:
-            flash('Username is required!')
+            flash('Username is required!', 'login')
             return redirect(url_for('account'))
 
         elif not password:
-            flash('Password is required!')
+            flash('Password is required!', 'login')
             return redirect(url_for('account'))
         
         else:
+            # SELECT entry where username matches input username
             conn = get_db_connection()
-            exists = conn.execute("SELECT Password FROM HumanPlayer WHERE Username = (?)", [username]).fetchone()
-
+            user_exists = conn.execute("SELECT * FROM HumanPlayer WHERE Username = (?)", [username]).fetchone()
             conn.close()
 
             # If there exists a field for the input USERNAME then verify password against hash.
-            if exists: 
-                phash = exists['Password']
+            if user_exists: 
 
-                # Use verify command that automatically compares SECRET with HASH
+                # Get the hashed password from the account matching the username.
+                phash = user_exists['Password']
+
+                # Use verify command that automatically compares SECRET with HASH. Compares input to stored password.
                 if(pbkdf2_sha256.verify(password, phash)):
-                    return redirect(url_for('play'))
+
+                    # Use load_user function to load PlayerID query into a class object of user.
+                    user = load_user(user_exists['PlayerID'])
+
+                    # Use FLASK-LOGIN to load the class object as a user.
+                    login_user(user)
+
+                    return redirect(url_for('account'))
+                
+                else:
+                    flash('Password is incorrect!', 'login')
+                    return redirect(url_for('account'))
                 
             # Otherwise, there is no username. Invalid submission.
             else:
-                flash('Username or password are incorrect!')
+                flash('User does not exist!', 'login')
                 return redirect(url_for('account'))
 
     return redirect(url_for('account'))
@@ -94,15 +127,15 @@ def register():
         password2 = request.form['create_password2']
 
         if not username:
-            flash('Username is required!')
+            flash('Username is required!', 'register')
             return redirect(url_for('account'))
 
         elif not password1:
-            flash('Password is required!')
+            flash('Password is required!', 'register')
             return redirect(url_for('account'))
 
         elif not password2:
-            flash('Password confirmation is required!')
+            flash('Password confirmation is required!', 'register')
             return redirect(url_for('account'))
 
         else:
@@ -115,7 +148,7 @@ def register():
                 # Username already exists so do nothing
                 if usernamecheck:                
                     conn.close()
-                    flash('Username is already taken!')
+                    flash('Username is already taken!', 'register')
                     return redirect(url_for('account'))              
 
                 # Username valid so hash password and create entry then redirect to profile.
@@ -130,8 +163,10 @@ def register():
                     
                     conn.commit()
                     conn.close()
-                    flash('Username is already taken!')   
                     return redirect(url_for('profile')) 
+            else:
+                flash('Passwords do not match!', 'register')
+                return redirect(url_for('account'))   
 
     return redirect(url_for('account'))
 
