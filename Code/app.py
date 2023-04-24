@@ -31,11 +31,17 @@ def load_user(user_id):
    else:
       return User(int(user[0]), user[1], user[2], user[3], user[4], user[5], user[6], user[7], user[8], user[9])
 
+# Redirect user to account if they try to access an authorised route.
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for('account'))
+
 @app.route("/")
 def home():
     return render_template("pages/index.html")
     
 @app.route("/play", methods=('GET', 'POST'))
+@login_required
 def play():
 
     conn = get_db_connection()
@@ -65,6 +71,14 @@ def account():
         return redirect(url_for('profile'))
     
     return render_template("pages/account.html")
+
+# Route to handle LOGOUT.
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
 
 # Route to handle LOGIN post requests.
 @app.route('/login', methods=['POST'])
@@ -172,9 +186,11 @@ def register():
 
 
 @app.route("/learn")
+@login_required
 def learn():
     return render_template("pages/learn.html")
 
 @app.route("/profile")
+@login_required
 def profile():
     return render_template("pages/profile.html")

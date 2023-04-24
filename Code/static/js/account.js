@@ -22,6 +22,7 @@ window.addEventListener('load', function () {
         // Stop page refresh
         //event.preventDefault();
 
+        // Submit form.
         event.currentTarget.submit();
     });
 

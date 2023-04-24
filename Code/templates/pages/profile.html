@@ -5,19 +5,226 @@
 {% block head %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/profile.css') }}">
+  <script src="{{url_for('static', filename='js/profile.js')}}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-<h1> Profile </h1>
+
+<div class="container">
+  <div class="wrapper">
+
+    <div class="row">
+      <div class="item middle">
+        <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar"> 
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="item middle">
+        <div class="username">
+          Username
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="item middle">
+          <hr>
+      </div>
+    </div>
+
+    <div class="row col biography">
+      <div class="item">
+        <div class="title"> Biography</div> 
+      </div>
+      <div class="item">
+        <div class="text"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.</div> 
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="item middle">
+          <hr>
+      </div>
+    </div>
+
+    <div class="row col">
+      <div class="item middle">
+        <div class="title"> Account Information</div> 
+      </div>
+
+      <div class="row">
+        <div class="row col">
+          <div class="item middle">
+            <div class="icon" title="Create Account">
+              <i class="fa-solid fa-square-plus fa-2x fa-fw"></i>
+            </div>
+          </div>
+          <div class="item middle">
+            <div class="text"> Date created</div> 
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row col">
+            <div class="item middle">
+              <div class="icon" title="Last Online">
+                <i class="fa-solid fa-earth-americas fa-2x fa-fw"></i>
+              </div>
+            </div>
+            <div class="item middle">
+              <div class="text"> Last online</div> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row col">
+      
+      <div class="row">
+        <div class="item left">
+          <i class="fa-solid fa-medal fa-fw"></i>
+        </div>
+        <div class="item">
+          <div class="text"> Achievements </div> 
+        </div>
+        <div class="item right">
+          <div class="text"> 0 </div> 
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="item left">
+          <i class="fa-solid fa-gamepad fa-fw"></i>
+        </div>
+        <div class="item">
+          <div class="text"> Games played </div> 
+        </div>
+        <div class="item right">
+          <div class="text"> 0 </div> 
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="item left">
+          <i class="fa-solid fa-user-group fa-fw"></i>
+        </div>
+        <div class="item">
+          <div class="text"> Friends </div> 
+        </div>
+        <div class="item right">
+          <div class="text"> 0 </div> 
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="item middle">
+        <button class="button" type="submit" title="Create Account">
+          Edit profile
+        </button>      
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="container">
+  <div class="wrapper">
+
+    <div class="row">
+      <button onclick="selected(this)" class="item middle selected">
+        <div class="title"> History</div> 
+      </button>
+      <button onclick="selected(this)" class="item middle">
+        <div class="title"> Badges</div> 
+      </button>
+      <button onclick="selected(this)" class="item middle">
+        <div class="title"> Friends</div> 
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="item">
+        <div class="recent-container">
+          <div class="wrapper">
+
+            <div class="row">
+              <div class="item left">
+
+                <div class="row col">
+                  <div class="item middle">
+                    Recent 20 Games
+                  </div>
+                  <div class="item middle" style="height:100px">
+                    <canvas id="donut"></canvas>
+                  </div>
+                  <div class="row">
+                    <div class="item middle" id="win-lose">
+                      10W 10L
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="row col">
+                <div class="row">
+                  <div class="item middle selected-btn">
+                    <button class="filter-btn">
+                      <div class="text"> All</div> 
+                    </button>
+                  </div>
+                  <div class="item middle">
+                    <button class="filter-btn">
+                      <div class="text"> Friends only</div> 
+                    </button>
+                  </div>
+                  <div class="item middle">
+                    <button class="filter-btn">
+                      <div class="text"> Bots only</div> 
+                    </button>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="item middle">
+                    <button class="filter-btn">
+                      <div class="text"> 1 min</div> 
+                    </button>
+                  </div>
+                  <div class="item middle">
+                    <button class="filter-btn">
+                      <div class="text"> 3 min</div> 
+                    </button>
+                  </div>
+                  <div class="item middle">
+                    <button class="filter-btn">
+                      <div class="text"> 5 min</div> 
+                    </button>
+                  </div>
+                  <div class="item middle">
+                    <button class="filter-btn">
+                      <div class="text"> 5 min</div> 
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 
-{% if current_user.is_authenticated %}
-  Hi {{ current_user.username }}!
 
-{% else %}
-  You are not logged in.
 
-{% endif %}
 
 
 {% endblock %}

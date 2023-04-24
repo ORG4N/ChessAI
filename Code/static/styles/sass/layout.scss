@@ -37,6 +37,7 @@ html, body {
 }
 
 #navigation-bar{
+    z-index:1;
     position: sticky;
     width:100vw;
     left: 0px;
@@ -113,6 +114,9 @@ html, body {
                 color:$nav-font-color;
             }
 
+            .logout{
+                color:#CD5C5C;
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 #navigation-bar {
+  z-index: 1;
   position: sticky;
   width: 100vw;
   left: 0px;
@@ -88,6 +89,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 #navigation-bar .nav-right .nav-button i {
   color: #D2CEB4;
+}
+#navigation-bar .nav-right .nav-button .logout {
+  color: #CD5C5C;
 }
 
 .button-nav {
