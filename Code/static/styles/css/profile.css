@@ -17,6 +17,10 @@ hr {
   width: 100%;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .recent-container {
   background-color: #282727;
   border: 0px;
@@ -24,6 +28,16 @@ hr {
   padding: 20px 30px;
   color: #FFFFFF;
   flex-basis: 100%;
+}
+
+.helper-container {
+  background-color: #A45A52;
+  border: 0px;
+  border-radius: 8px;
+  padding: 20px 30px;
+  color: #FFFFFF;
+  flex-basis: 100%;
+  text-align: center;
 }
 
 .container {
@@ -66,6 +80,7 @@ hr {
 }
 .container .wrapper .row .right {
   justify-content: end;
+  flex-basis: fit-content;
 }
 .container .wrapper .row .item {
   display: flex;

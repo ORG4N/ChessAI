@@ -16,14 +16,14 @@
 
     <div class="row">
       <div class="item middle">
-        <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar"> 
+        <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar" title="{{ current_user.picture }}"> 
       </div>
     </div>
 
     <div class="row">
       <div class="item middle">
         <div class="username">
-          Username
+          {{ current_user.username }}
         </div>
       </div>
     </div>
@@ -39,7 +39,7 @@
         <div class="title"> Biography</div> 
       </div>
       <div class="item">
-        <div class="text"> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.</div> 
+        <div class="text"> {{ current_user.biography }}</div> 
       </div>
     </div>
 
@@ -62,7 +62,7 @@
             </div>
           </div>
           <div class="item middle">
-            <div class="text"> Date created</div> 
+            <div class="text"> {{ current_user.created[:10]}}</div> 
           </div>
         </div>
 
@@ -74,7 +74,7 @@
               </div>
             </div>
             <div class="item middle">
-              <div class="text"> Last online</div> 
+              <div class="text"> {{ current_user.online }}</div> 
             </div>
           </div>
         </div>
@@ -118,6 +118,43 @@
           <div class="text"> 0 </div> 
         </div>
       </div>
+
+    </div>
+
+    <div class="row col">
+      <div class="row">
+        <div class="item left">
+          <i class="fa-solid fa-circle-plus fa-fw"></i>
+        </div>
+        <div class="item">
+          <div class="text"> Total Won </div> 
+        </div>
+        <div class="item right">
+          <div class="text"> {{current_user.wins}} </div> 
+        </div>
+      </div>
+      <div class="row">
+        <div class="item left">
+          <i class="fa-solid fa-circle-xmark fa-fw"></i>
+        </div>
+        <div class="item">
+          <div class="text"> Total Lost </div> 
+        </div>
+        <div class="item right">
+          <div class="text"> {{current_user.losses}} </div> 
+        </div>
+      </div>
+      <div class="row">
+        <div class="item left">
+          <i class="fa-solid fa-circle-minus fa-fw"></i>
+        </div>
+        <div class="item">
+          <div class="text"> Total Drawn </div> 
+        </div>
+        <div class="item right">
+          <div class="text"> {{current_user.draws}} </div> 
+        </div>
+      </div>
     </div>
 
     <div class="row">
@@ -135,25 +172,25 @@
   <div class="wrapper">
 
     <div class="row">
-      <button onclick="selected(this)" class="item middle selected">
+      <button class="item middle selected" id="history-btn">
         <div class="title"> History</div> 
       </button>
-      <button onclick="selected(this)" class="item middle">
+      <button class="item middle" id="badges-btn">
         <div class="title"> Badges</div> 
       </button>
-      <button onclick="selected(this)" class="item middle">
+      <button class="item middle" id="friends-btn">
         <div class="title"> Friends</div> 
       </button>
     </div>
 
-    <div class="row">
+    <div class="row col" id="history-section">
       <div class="item">
         <div class="recent-container">
           <div class="wrapper">
 
             <div class="row">
-              <div class="item left">
 
+              <div class="item left">
                 <div class="row col">
                   <div class="item middle">
                     Recent 20 Games
@@ -163,11 +200,10 @@
                   </div>
                   <div class="row">
                     <div class="item middle" id="win-lose">
-                      10W 10L
+                      10W 10L OD
                     </div>
                   </div>
                 </div>
-
               </div>
 
               <div class="row col">
@@ -213,6 +249,41 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="item">
+        <div class="helper-container">
+          <div class="wrapper">
+
+            You have no Match History.
+    
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row col hidden" id="badges-section">
+      <div class="item">
+        <div class="helper-container">
+          <div class="wrapper">
+
+            You have no Badges.
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row col hidden" id="friends-section">
+      <div class="item">
+        <div class="helper-container">
+          <div class="wrapper">
+
+            You have no Friends.
             
           </div>
         </div>
