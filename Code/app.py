@@ -2,7 +2,8 @@ from flask import render_template, Flask, request, url_for, flash, redirect
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import sqlite3, os
 from passlib.hash import pbkdf2_sha256
-from models import User
+from models import User, Player, Game
+import random
 
 
 
@@ -40,6 +41,45 @@ def unauthorized():
 def home():
     return render_template("pages/index.html")
     
+@app.route("/game/bot/<id_>", methods=('GET', 'POST'))
+@login_required
+def game(id_):
+
+    
+    conn = get_db_connection()
+    game = conn.execute("SELECT * FROM BotMatch WHERE MatchID = (?)", [id_]).fetchone()     # Fetch MATCH info
+    
+    # 
+    if not game:
+        flash("Game does not exist")
+        return redirect(url_for('play'))
+
+    participant1 = game["Participant2"]     # Fetch ID for COMPUTER player
+    participant2 = game["Participant2"]     # Fetch ID for HUMAN player.
+
+    human = conn.execute("SELECT * FROM HumanParticipant WHERE ParticipantID = (?)", [participant2]).fetchone()
+    player_username = human["Username"]
+
+    # Game does not belong to player.
+    if not player_username == current_user.username:
+        return redirect(url_for('play'))
+
+    # Make HUMAN object
+    p_human = Player(human["ParticipantID"], human["Username"], human["Color"], human["Color"])
+
+    # Make COMPUTER object
+    computer = conn.execute("SELECT * FROM ComputerParticipant WHERE ParticipantID = (?)", [participant1]).fetchone()
+    p_computer = Player(computer["ParticipantID"], computer["Username"], computer["Color"], computer["Color"])
+
+    # Make MATCH object
+    game_obj = Game(game["MatchID"], p_computer, p_human, game["Event"], game["Site"], game["Date"], game["Round"], game["Result"], game["Time"], game["Termination"], game["Moves"])
+
+    flash(game_obj.human.color)
+
+    conn.close()
+
+    return render_template("pages/play.html")
+
 @app.route("/play", methods=('GET', 'POST'))
 @login_required
 def play():
@@ -54,13 +94,60 @@ def play():
         diff = request.form['difficulty']
         time = request.form['time']
 
+        # Check if values are not empty.
         if not side or not diff or not time:
             flash('Something went wrong... Please refresh the page and try again!')
             return redirect(url_for('play'))
         
-        else:
-            # Submit form to crate game.
-            return redirect(url_for('play'))
+        else:   # Submit form to crate game.
+            
+            # If side is not black or white then it is either RAND or invalid. Either way just select a random side value.
+            side_choices = ["white", "black"]
+            if side not in side_choices:
+                side = random.choice(side_choices)
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # See if difficulty exists in db
+            difficulty_get = conn.execute("SELECT * FROM ComputerPlayer WHERE Rating = (?)", [diff]).fetchone()
+            if not difficulty_get:
+                flash('Opponent is invalid.')
+                return redirect(url_for('play'))
+
+            # See if time exists in db
+            time_get = conn.execute("SELECT * FROM TimeControl WHERE Value = (?)", [time]).fetchone()
+            if not time_get:
+                flash('Time is invalid.')
+                return redirect(url_for('play'))
+
+
+            # Create Player participant
+            cursor.execute('INSERT INTO HumanParticipant (Username, Color, Points) VALUES (?, ?, ?)',
+                        (current_user.username, side, 0))
+
+            p2 = cursor.lastrowid
+
+            # Create Computer participant
+            side_choices.remove(side)
+
+            c_username = difficulty_get['Username']
+            c_color = side_choices[0]
+            
+            cursor.execute('INSERT INTO ComputerParticipant (Username, Color, Points) VALUES (?, ?, ?)',
+                        (c_username, c_color, 0))
+
+            p1 = cursor.lastrowid
+
+            cursor.execute('INSERT INTO BotMatch (Participant1, Participant2, Event, Site, Round, Result, Time, Termination) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                        (p1, p2, "Bot Match", "ChessAI.com", "?", "Ongoing", time, "?"))
+            
+            game_id = cursor.lastrowid
+
+            conn.commit()
+            conn.close()
+
+            return redirect(url_for('game', id_=game_id))
 
     return render_template("pages/play.html", bots=computer_players, times=time_control)
 
@@ -78,7 +165,6 @@ def account():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 # Route to handle LOGIN post requests.
 @app.route('/login', methods=['POST'])
@@ -130,7 +216,6 @@ def login():
 
     return redirect(url_for('account'))
 
-
 # Route to handle REGISTER aka CREATE ACCOUNT post requests.
 @app.route('/register', methods=['POST'])
 def register():
@@ -172,18 +257,28 @@ def register():
                     password = pbkdf2_sha256.hash(password1)
 
                     # Create row in database
-                    conn.execute('INSERT INTO HumanPlayer (Username, Password, Online, Biography, Picture, Wins, Losses, Draws) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    cursor = conn.cursor()
+                    cursor.execute('INSERT INTO HumanPlayer (Username, Password, Online, Biography, Picture, Wins, Losses, Draws) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                                 (username, password, "Currently online", "No biography", "None", 0, 0, 0))
                     
+                    # Get the ID of the row just created
+                    player_id = cursor.lastrowid
+
                     conn.commit()
                     conn.close()
+
+                    # Use load_user function to load PlayerID query into a class object of user.
+                    user = load_user(player_id)
+
+                    # Use FLASK-LOGIN to load the class object as a user.
+                    login_user(user)
+
                     return redirect(url_for('profile')) 
             else:
                 flash('Passwords do not match!', 'register')
                 return redirect(url_for('account'))   
 
     return redirect(url_for('account'))
-
 
 @app.route("/learn")
 @login_required

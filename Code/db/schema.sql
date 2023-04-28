@@ -12,8 +12,8 @@ CREATE TABLE BotMatch (
     Participant2 INTEGER NOT NULL,
     "Event" TEXT NOT NULL,
     "Site" TEXT NOT NULL,
-    "Date" TEXT NOT NULL,
-    Round INTEGER NOT NULL,
+    "Date" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Round TEXT NOT NULL,
     Result TEXT NOT NULL,
     "Time" INTEGER NOT NULL,
     Termination TEXT NOT NULL,
@@ -26,25 +26,20 @@ CREATE TABLE BotMatch (
 
 CREATE TABLE ComputerParticipant (
     ParticipantID INTEGER PRIMARY KEY AUTOINCREMENT,
-    MatchID INTEGER,
     Username INTEGER NOT NULL,
     Color TEXT NOT NULL,
     Points  INTEGER NOT NULL,
 
-    FOREIGN KEY(Username) REFERENCES ComputerPlayer(Username),
-    FOREIGN KEY(MatchID) REFERENCES BotMatch(MatchID)
+    FOREIGN KEY(Username) REFERENCES ComputerPlayer(Username)
 );
 
 CREATE TABLE HumanParticipant (
     ParticipantID INTEGER PRIMARY KEY AUTOINCREMENT,
-    MatchID INTEGER,
     Username INTEGER NOT NULL,
     Color TEXT NOT NULL,
     Points  INTEGER NOT NULL,
 
-    FOREIGN KEY(Username) REFERENCES HumanPlayer(Username),
-    FOREIGN KEY(MatchID) REFERENCES BotMatch(MatchID)
-
+    FOREIGN KEY(Username) REFERENCES HumanPlayer(Username)
 );
 
 CREATE TABLE HumanPlayer(

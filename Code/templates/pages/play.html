@@ -103,11 +103,8 @@
 
     <div class="container">
         <div class="profile-wrapper">
-            <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar"> 
-            <div class="username"> ORGAN123</div>
-            <a href="#" class="settings-btn"> 
-                <i class="fa-solid fa-ellipsis fa-2xl"></i>
-            </a>
+            <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar" title="{{ current_user.picture }}"> 
+            <div class="username"> {{current_user.username}}</div>
         </div>
     </div>
 

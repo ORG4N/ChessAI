@@ -25,3 +25,24 @@ class User(UserMixin):
         
         def get_id(self):
             return self.id
+
+class Player():
+    def __init__(self, id, username, color, points):
+        self.id = str(id)
+        self.username = username
+        self.color = color
+        self.points = points
+
+class Game():
+    def __init__(self, id, computer, human, event, site, date, round_, result, time, termination, moves):
+        self.id = str(id)
+        self.computer = computer
+        self.human = human
+        self.event = event
+        self.site = site
+        self.date = date
+        self.round = round_
+        self.result = result
+        self.time = time
+        self.termination = termination
+        self.moves = moves
