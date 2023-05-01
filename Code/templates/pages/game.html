@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+
+{% block title %} Play Chess {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/game.css') }}">
+    <script>var exports = {};</script>
+    <script src="{{url_for('static', filename='node_modules/chess.js/dist/chess.js')}}"></script>
+    <script src="{{url_for('static', filename='js/game.js')}}"></script>
+
+    <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.css"
+      integrity="sha384-UAD3KzJ7THyDKHxQFPR2f3gGI2C/jdLP9AilbpnkGnf4b1PBvTJl6biezz0y9Vou"
+      crossorigin="anonymous">
+
+    <script src="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.js"
+        integrity="sha384-xlTkh4p+HAppJTBKFmgIxsCZs94kwA015Hf5aW6tQg5/DYwnfdd1Tr+1Hvh9c4Re"
+        crossorigin="anonymous"></script>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="container">
+    <div class="wrapper">
+        <div class="info-container fit">
+            <div class="row col">
+                <div class="item">
+                    <div class="row col participant" id="p1">
+                        <div class="item middle"> <img class="piece-color" src="/static/images/white.png" alt="White" title="White"></img></div>
+                        <div class="item middle" id="p1_name"> NAME? </div>
+                    </div>
+                    <div class="row col participant" id="p2">
+                        <div class="item middle"> <img class="piece-color" src="/static/images/black.png" alt="Black" title="Black"></img></div>
+                        <div class="item middle" id="p2_name"> NAME?</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="row parameters">
+                        <div class="item middle"> Bot Difficulty</div>
+                        <div class="item middle" id="rating"> VALUE?</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="row parameters">
+                        <div class="item middle"> Game Time</div>
+                        <div class="item middle" id="time"> VALUE?</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col control-container">
+
+                <div class="row control top">
+                    <button class="item middle btn" onclick="control(this)"> <i class="fa-solid fa-angles-left fa-lg fa-fw"></i> </button>
+                    <button class="item middle btn" onclick="control(this)"> <i class="fa-solid fa-angle-left fa-lg fa-fw"></i> </button>
+                    <button class="item middle btn" onclick="control(this)"> <i class="fa-solid fa-angle-right fa-lg fa-fw"></i> </button>
+                    <button class="item middle btn" onclick="control(this)"> <i class="fa-solid fa-angles-right fa-lg fa-fw"></i> </button>
+                </div>
+
+                <div class="wrapper row col table">
+                    <div class="row">
+                        <div class="item header"> #     </div>
+                        <div class="item header"> White </div>
+                        <div class="item header"> Black </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="item value"> ? </div>
+                        <div class="item value"> ? </div>
+                        <div class="item value"> ? </div>
+                    </div>
+                </div>
+
+                <div class="row control bottom">
+                    <div class="item">
+                        <input class="item middle" placeholder="Enter move or drag piece... "></input>
+                        <button type="button" onclick="submitMove(this)" title="Submit move">
+                            <i class="fa-solid fa-arrow-right fa-xl icon" id="p-icon-3"></i>
+                        </button>
+
+                    </div>
+                </div>
+        </div>
+
+        <div class="info-container fit">
+            <button type="button" class="button" title="Resign">
+                <i class="fa-solid fa-flag fa-flip-horizontal"></i>
+                RESIGN
+                <i class="fa-solid fa-flag"></i>
+            </button>
+        </div>
+
+        <p id="gameStatus"></p>
+        <h4>Game PGN:</h4>
+        <div id="gamePGN" style="font-family: monospace"></div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="wrapper">
+
+        <div class="row">
+            <div class="item middle" id="computer">
+                COMPUTER: ?
+            </div>
+        </div>
+
+        <div class="row" id="board-container">
+            <div id="board" style="width:500px"></div>
+        </div>
+
+        <div class="row">
+            <div class="item middle" id="player">
+                PLAYER: ?
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+
+    document.getElementById("p1_name").innerText = '{{game.computer.username}}'
+    document.getElementById("p2_name").innerText = '{{game.computer.username}}'
+
+
+    document.getElementById("time").innerText = '{{game.time}}'
+    document.getElementById("rating").innerText = '{{game.computer.username[4:]}}'
+
+    document.getElementById("player").innerText = '{{game.human.username}}'
+    document.getElementById("computer").innerText = '{{game.computer.username}}'
+
+    console.log('{{game.computer}}')
+
+</script>
+
+{% endblock %}

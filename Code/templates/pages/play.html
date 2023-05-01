@@ -7,15 +7,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/play.css') }}">
   <script src="{{url_for('static', filename='js/play.js')}}"></script>
 
-  <link rel="stylesheet"
-      href="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.css"
-      integrity="sha384-UAD3KzJ7THyDKHxQFPR2f3gGI2C/jdLP9AilbpnkGnf4b1PBvTJl6biezz0y9Vou"
-      crossorigin="anonymous">
-
-    <script src="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.js"
-        integrity="sha384-xlTkh4p+HAppJTBKFmgIxsCZs94kwA015Hf5aW6tQg5/DYwnfdd1Tr+1Hvh9c4Re"
-        crossorigin="anonymous"></script>
-
 {% endblock %}
 
 
@@ -30,14 +21,14 @@
                 <input type="hidden" name="side" id="side-input" value="" autocomplete='off'> 
 
                 <button type="button" onclick="setStart(this)" class="button-item" id="black">
-                    <img src="static/images/black.png" alt="Black start" title="Black start"></img>
+                    <img src="/static/images/black.png" alt="Black start" title="Black start"></img>
                 </button>
 
                 <button type="button" onclick="setStart(this)" class="button-item" id="rand">
-                    <img src="static/images/random.png" alt="Random start" title="Random start"></img>
+                    <img src="/static/images/random.png" alt="Random start" title="Random start"></img>
                 </button>
                 <button type="button" onclick="setStart(this)" class="button-item" id="white">
-                    <img src="static/images/white.png" alt="White start" title="White start"></img>
+                    <img src="/static/images/white.png" alt="White start" title="White start"></img>
                 </button>
             </div>
             <div class="dropdown-wrapper">
@@ -103,7 +94,7 @@
 
     <div class="container">
         <div class="profile-wrapper">
-            <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar" title="{{ current_user.picture }}"> 
+            <img id="avatar" src="/static/images/avatar_placeholder.png" alt="Avatar" title="{{ current_user.picture }}"> 
             <div class="username"> {{current_user.username}}</div>
         </div>
     </div>
@@ -111,26 +102,6 @@
 </div>
 
 <div id="board-container">
-    
-    <div class="match-heading" id="top-player">
-        <div class="player-info">
-            <img class="player-pic" src="static/images/avatar_placeholder.png"> 
-            <div class="player-username">Black</div>
-        </div>
-        <div class="time-control">00:00 </div>
-    </div>
-
-    <div id="board-wrapper">
-        <div id="board" style="width: 40%;"></div>
-    </div>
-
-    <div class="match-heading" id="bottom-player">
-        <div class="player-info">
-            <img class="player-pic" src="static/images/avatar_placeholder.png"> 
-            <div class="player-username">White</div>
-        </div>
-        <div class="time-control">00:00 </div>
-    </div>
 </div>
 
 {% endblock %}

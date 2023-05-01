@@ -5,8 +5,6 @@ window.addEventListener('load', function () {
     if (flashes.children.length != 0){
         flashes.classList.remove("hidden");
     }
-    
-    const board = Chessboard2('board')
 
     // Function that will call VALIDATE() and then determine whether a match is created or user is directed to modify inputs.
     const matchForm = document.getElementById("match-form");

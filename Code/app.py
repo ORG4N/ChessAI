@@ -41,7 +41,7 @@ def unauthorized():
 def home():
     return render_template("pages/index.html")
     
-@app.route("/game/bot/<id_>", methods=('GET', 'POST'))
+@app.route("/game/bot/<id_>")
 @login_required
 def game(id_):
 
@@ -74,11 +74,9 @@ def game(id_):
     # Make MATCH object
     game_obj = Game(game["MatchID"], p_computer, p_human, game["Event"], game["Site"], game["Date"], game["Round"], game["Result"], game["Time"], game["Termination"], game["Moves"])
 
-    flash(game_obj.human.color)
-
     conn.close()
 
-    return render_template("pages/play.html")
+    return render_template("pages/game.html", game=game_obj)
 
 @app.route("/play", methods=('GET', 'POST'))
 @login_required

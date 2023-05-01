@@ -1,8 +1,8 @@
 window.addEventListener('load', function () {
 
     const donut = document.getElementById('donut');
-    won = 5;
-    lost = 4;
+    won = 1;
+    lost = 1;
     drawn = 1;
 
     data = {
@@ -90,4 +90,8 @@ function selected(clicked){
 
     // Add se;ected to the button element pressed.
     clicked.classList.add("selected");
+}
+
+function edit(btn){
+    alert("Feature not implemented")
 }
