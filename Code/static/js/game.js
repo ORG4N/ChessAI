@@ -2,16 +2,17 @@ var game;
 var board;
 
 window.addEventListener('load', function () {
-
+    
     // Use chess.js to create moves
-    game = new Chess()   
+    chess = new Chess()   
 
     // Default board position is classic chess Start position
     const config = {
         pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
         draggable: true,
         dropOffBoard: 'snapback',
-        position: 'start'
+        position: 'start',
+        onDragStart,
     }
 
     // Use chessboardjs to render board on html
@@ -22,20 +23,42 @@ window.addEventListener('load', function () {
     document.getElementById("board").style.width = h;
     board.resize();
 
-    window.setTimeout(makeRandomMove, 100)
-
-    function makeRandomMove () {
-        if (game.isGameOver()) return
-
-        const legalMoves = game.moves()
-        const randomIdx = Math.floor(Math.random() * legalMoves.length)
-        game.move(legalMoves[randomIdx])
-        board.position(game.fen())
-
-        window.setTimeout(makeRandomMove, 100)
+    // Human is white so Computer is black
+    if (game.human.color == "white"){
+        document.getElementById("white_name").innerText = game.human.username
+        document.getElementById("black_name").innerText = game.computer.username
+        board.orientation('white')
     }
 
+    // Human is black so Computer is white
+    else{
+        document.getElementById("white_name").innerText = game.computer.username
+        document.getElementById("black_name").innerText = game.human.username
+        board.orientation('black')
+    }
+
+
+    document.getElementById("time").innerText = game.time
+    document.getElementById("rating").innerText = game.computer.username.substring(4)
+    document.getElementById("player").innerText = game.human.username
+    document.getElementById("computer").innerText = game.computer.username
+
+
 })
+
+
+// only allow pieces to be dragged when the board is oriented in their direction
+function onDragStart (dragInfo) {
+
+    console.log(dragInfo)
+
+    if (dragInfo.orientation === 'white' && !isWhitePiece(dragInfo.piece)) return false
+    if (dragInfo.orientation === 'black' && !isBlackPiece(dragInfo.piece)) return false
+}
+
+  
+function isWhitePiece (piece) { return /^w/.test(piece) }
+function isBlackPiece (piece) { return /^b/.test(piece) }
 
 function submitMove(btn){
     alert("Feature not implemented")

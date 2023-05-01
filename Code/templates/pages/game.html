@@ -5,18 +5,36 @@
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/game.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/@chrisoakman/chessboard2/dist/chessboard2.css') }}">
     <script>var exports = {};</script>
     <script src="{{url_for('static', filename='node_modules/chess.js/dist/chess.js')}}"></script>
+    <script src="{{url_for('static', filename='node_modules/@chrisoakman/chessboard2/dist/chessboard2.min.js')}}"></script>
     <script src="{{url_for('static', filename='js/game.js')}}"></script>
 
-    <link rel="stylesheet"
-      href="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.css"
-      integrity="sha384-UAD3KzJ7THyDKHxQFPR2f3gGI2C/jdLP9AilbpnkGnf4b1PBvTJl6biezz0y9Vou"
-      crossorigin="anonymous">
+    <script type="text/javascript">
 
-    <script src="https://unpkg.com/@chrisoakman/chessboard2@0.2.0/dist/chessboard2.min.js"
-        integrity="sha384-xlTkh4p+HAppJTBKFmgIxsCZs94kwA015Hf5aW6tQg5/DYwnfdd1Tr+1Hvh9c4Re"
-        crossorigin="anonymous"></script>
+        var human = {
+            "username": {{ game.human.username|tojson }},
+            "color": {{ game.human.color|tojson }},     
+            "points": {{ game.human.points|tojson }}
+        }
+
+        var computer = {
+            "username": {{ game.computer.username|tojson }},
+            "color": {{ game.computer.color|tojson }},
+            "points": {{ game.computer.points|tojson }}
+        }
+
+        var game = {
+            "computer": computer,
+            "human": human,
+            "result": {{ game.result|tojson }},
+            "time": {{ game.time|tojson }},
+            "termination": {{ game.termination|tojson }},
+            "moves": {{ game.moves|tojson }},
+        }
+
+     </script>
 
 {% endblock %}
 
@@ -30,13 +48,13 @@
         <div class="info-container fit">
             <div class="row col">
                 <div class="item">
-                    <div class="row col participant" id="p1">
+                    <div class="row col participant" id="white">
                         <div class="item middle"> <img class="piece-color" src="/static/images/white.png" alt="White" title="White"></img></div>
-                        <div class="item middle" id="p1_name"> NAME? </div>
+                        <div class="item middle" id="white_name"> NAME? </div>
                     </div>
-                    <div class="row col participant" id="p2">
+                    <div class="row col participant" id="black">
                         <div class="item middle"> <img class="piece-color" src="/static/images/black.png" alt="Black" title="Black"></img></div>
-                        <div class="item middle" id="p2_name"> NAME?</div>
+                        <div class="item middle" id="black_name"> NAME?</div>
                     </div>
                 </div>
                 <div class="item">
@@ -95,11 +113,6 @@
                 <i class="fa-solid fa-flag"></i>
             </button>
         </div>
-
-        <p id="gameStatus"></p>
-        <h4>Game PGN:</h4>
-        <div id="gamePGN" style="font-family: monospace"></div>
-
     </div>
 </div>
 
@@ -124,22 +137,5 @@
 
     </div>
 </div>
-
-<script>
-
-
-    document.getElementById("p1_name").innerText = '{{game.computer.username}}'
-    document.getElementById("p2_name").innerText = '{{game.computer.username}}'
-
-
-    document.getElementById("time").innerText = '{{game.time}}'
-    document.getElementById("rating").innerText = '{{game.computer.username[4:]}}'
-
-    document.getElementById("player").innerText = '{{game.human.username}}'
-    document.getElementById("computer").innerText = '{{game.computer.username}}'
-
-    console.log('{{game.computer}}')
-
-</script>
 
 {% endblock %}
