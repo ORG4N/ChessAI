@@ -5,10 +5,11 @@
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/game.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/@chrisoakman/chessboard2/dist/chessboard2.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/@chrisoakman/chessboardjs/dist/chessboard-1.0.0.css') }}">
     <script>var exports = {};</script>
+    <script src="{{url_for('static', filename='node_modules/jquery/dist/jquery.js')}}"></script>
     <script src="{{url_for('static', filename='node_modules/chess.js/dist/chess.js')}}"></script>
-    <script src="{{url_for('static', filename='node_modules/@chrisoakman/chessboard2/dist/chessboard2.min.js')}}"></script>
+    <script src="{{url_for('static', filename='node_modules/@chrisoakman/chessboardjs/dist/chessboard-1.0.0.js')}}"></script>
     <script src="{{url_for('static', filename='js/game.js')}}"></script>
 
     <script type="text/javascript">
@@ -107,7 +108,7 @@
         </div>
 
         <div class="info-container fit">
-            <button type="button" class="button" title="Resign">
+            <button type="button" onclick="resign(this)" class="button" title="Resign">
                 <i class="fa-solid fa-flag fa-flip-horizontal"></i>
                 RESIGN
                 <i class="fa-solid fa-flag"></i>

@@ -1,22 +1,20 @@
-var game;
-var board;
+var chess = new Chess(); // Use chess.js to create moves
+var board = null;
 
 window.addEventListener('load', function () {
-    
-    // Use chess.js to create moves
-    chess = new Chess()   
 
     // Default board position is classic chess Start position
     const config = {
-        pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
         draggable: true,
         dropOffBoard: 'snapback',
         position: 'start',
+        showNotation: false,
         onDragStart,
+        onDrop,
     }
 
     // Use chessboardjs to render board on html
-    board = Chessboard2('board', config);    
+    board = Chessboard('board', config);   
 
     // Resize board to container 
     const h = document.getElementById("board-container").clientHeight + "px"; 
@@ -43,22 +41,54 @@ window.addEventListener('load', function () {
     document.getElementById("player").innerText = game.human.username
     document.getElementById("computer").innerText = game.computer.username
 
-
 })
 
-
 // only allow pieces to be dragged when the board is oriented in their direction
-function onDragStart (dragInfo) {
+function onDragStart (source, piece, position, orientation) {
 
-    console.log(dragInfo)
+    // Game is over so pieces cannot be moved.
+    if (chess.isGameOver()) return false
 
-    if (dragInfo.orientation === 'white' && !isWhitePiece(dragInfo.piece)) return false
-    if (dragInfo.orientation === 'black' && !isBlackPiece(dragInfo.piece)) return false
+    // Example: If turn is white and player is white then check if the piece being picked up is not black then make move.
+    // 1. Check if turn is for player.
+    // 2. And also check if the 'dragged' piece belongs to players colour side.
+    // 3. Return true if piece can be moved; Return false if move is illegal.
+
+    if (chess.turn() == 'w' && orientation == 'white' && game.human.color == 'white' && piece.search(/^w/) !== -1) { return true }
+    if (chess.turn() == 'b' && orientation == 'black' && game.human.color == 'black' && piece.search(/^b/) !== -1) { return true }
+    else{ return false}
+  }
+
+function onDrop (source, target) {
+    // see if the move is legal
+    var move = chess.move({
+      from: source,
+      to: target,
+      promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    })
+  
+    // illegal move
+    console.log(move)
+    if (move === null) return 'snapback'
 }
 
-  
-function isWhitePiece (piece) { return /^w/.test(piece) }
-function isBlackPiece (piece) { return /^b/.test(piece) }
+function resign(btn){
+    chess.clear()
+    board.position(chess.fen())
+
+    if (game.computer.color == "black"){
+        document.getElementById("black").style.backgroundColor = "green"
+        document.getElementById("white").style.backgroundColor = "red"
+    } 
+
+    else{
+        document.getElementById("black").style.backgroundColor = "red"
+        document.getElementById("white").style.backgroundColor = "green"
+    }
+
+    alert("Winner is: " + game.computer.username + " (" + game.computer.color + ")")
+
+}
 
 function submitMove(btn){
     alert("Feature not implemented")
