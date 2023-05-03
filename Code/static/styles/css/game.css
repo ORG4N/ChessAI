@@ -116,13 +116,13 @@ hr {
 }
 .container .wrapper .row .table .header:nth-child(1), .container .wrapper .row .table .value:nth-child(1) {
   padding-left: 10px;
-  flex: 20;
+  flex: 10;
 }
 .container .wrapper .row .table .header:nth-child(2), .container .wrapper .row .table .value:nth-child(2) {
-  flex: 40;
+  flex: 45;
 }
 .container .wrapper .row .table .header:nth-child(3), .container .wrapper .row .table .value:nth-child(3) {
-  flex: 40;
+  flex: 45;
 }
 .container .wrapper .row .table .header {
   font-size: large;
@@ -153,6 +153,9 @@ hr {
 }
 .container .wrapper .row .item input {
   padding: 5px;
+}
+.container .wrapper .row .item i {
+  align-self: center;
 }
 
 .button {

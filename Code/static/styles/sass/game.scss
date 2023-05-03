@@ -130,15 +130,15 @@ hr{
                 .header, .value{
                     &:nth-child(1){
                         padding-left: 10px;
-                        flex: 20;
+                        flex: 10;
                     }
                 
                     &:nth-child(2){
-                        flex: 40;
+                        flex: 45;
                     }
 
                     &:nth-child(3){
-                        flex: 40;
+                        flex: 45;
                     }
                 }
 
@@ -177,6 +177,10 @@ hr{
 
                 input{
                     padding:5px;
+                }
+
+                i{
+                    align-self: center;
                 }
             }
         }
