@@ -1,18 +1,18 @@
 var chess = new Chess() // Use chess.js to create moves
 var board = null
 
-window.addEventListener('load', function () {
+// Default board position is classic chess Start position
+const config = {
+    draggable: true,
+    dropOffBoard: 'snapback',
+    position: 'start',
+    showNotation: true,
+    onDragStart,
+    onDrop,
+    onChange
+}
 
-    // Default board position is classic chess Start position
-    const config = {
-        draggable: true,
-        dropOffBoard: 'snapback',
-        position: 'start',
-        showNotation: true,
-        onDragStart,
-        onDrop,
-        onChange
-    }
+window.addEventListener('load', function () {
 
     // Use chessboardjs to render board on html
     board = Chessboard('board', config)   
@@ -27,6 +27,8 @@ window.addEventListener('load', function () {
         document.getElementById("white_name").innerText = game.human.username
         document.getElementById("black_name").innerText = game.computer.username
         board.orientation('white')
+
+        countdownTimer()
     }
 
     // Human is black so Computer is white
@@ -35,16 +37,68 @@ window.addEventListener('load', function () {
         document.getElementById("black_name").innerText = game.human.username
         board.orientation('black')
 
+        document.getElementById("time").classList.add('pause');
         window.setTimeout(makeRandomMove, 250)
+
+        countdownTimer()
     }
 
 
-    document.getElementById("time").innerText = game.time
+    document.getElementById("time").innerText = game.time + ":00"
     document.getElementById("rating").innerText = game.computer.username.substring(4)
     document.getElementById("player").innerText = game.human.username
     document.getElementById("computer").innerText = game.computer.username
-
 })
+
+function countdownTimer(){
+    var startTime = Date.now();
+
+    var interval = setInterval(function() {
+
+        if(!$('#time').hasClass('pause')) {
+            var elapsedTime = Date.now() - startTime;
+            var countdown = (game.time*60) - (elapsedTime / 1000).toFixed(0);
+            //document.getElementById("time").innerHTML = countdown.toString().slice(0,3)
+
+            document.getElementById("time").innerHTML = fancyTimeFormat(countdown)
+
+            if (countdown <= 0){
+                document.getElementById("time").innerHTML  = "TIME'S UP"
+                clearInterval(interval)
+
+                // If human is white then score is 0-1 (they lost). Likewise 1-0 if they are black.
+                if (game.human.color == "white"){
+                    game.result = "0-1"
+                } else{
+                    game.result = "1-0"
+                }
+
+                alert("Player has run out of time.\nComputer wins: " + game.computer.username + " (" + game.computer.color + ")")
+                result()
+            } 
+        }
+
+    }, 100);
+}
+
+function fancyTimeFormat(duration) {
+    // Hours, minutes and seconds
+    const hrs = ~~(duration / 3600);
+    const mins = ~~((duration % 3600) / 60);
+    const secs = ~~duration % 60;
+  
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    let ret = "";
+  
+    if (hrs > 0) {
+      ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    }
+  
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+  
+    return ret;
+  }
 
 // only allow pieces to be dragged when the board is oriented in their direction
 function onDragStart (source, piece, position, orientation) {
@@ -69,11 +123,10 @@ function onDrop (source, target, piece) {
 
     // Make the move, from source to target. Source is the location of the piece picked up. Target is the location where the piece is dropped.
     try{
-        
-        // Store turn because .move() changes the turn and we need to append to the history AFTER making the move.
-        turn = chess.turn()
-
         chess.move({ from: source, to: target, promotion: 'q'})
+        board.position(chess.fen())
+        document.getElementById("time").classList.add('pause');
+
     }
 
     // Exception will be thrown if move is illegal. 
@@ -82,7 +135,7 @@ function onDrop (source, target, piece) {
         return 'snapback'
     }
 
-    window.setTimeout(makeRandomMove, 250)
+    window.setTimeout(makeRandomMove, 1000)    
 }
 
 // Board position has changed.
@@ -96,12 +149,12 @@ function onChange (oldPos, newPos) {
 
         if(chess.isCheckmate()){
             if(chess.turn() == 'w') {
-                game.result = "1-0"
+                game.result = "0-1"
                 alert("Game over. Black has won. White has lost.") 
             }
 
             if(chess.turn() == 'b') {
-                game.result = "0-1"
+                game.result = "1-0"
                 alert("Game over. White has won. Black has lost.") 
             }
         }
@@ -125,6 +178,8 @@ function onChange (oldPos, newPos) {
                 alert("Game over. Draw: 50-move rule.") 
             }
         }
+
+        result()
     }
 
     else{
@@ -268,6 +323,7 @@ function removeHighlight(){
 }
 
 function makeRandomMove () {
+
     var possibleMoves = chess.moves()
   
     // game over
@@ -276,6 +332,8 @@ function makeRandomMove () {
     var randomIdx = Math.floor(Math.random() * possibleMoves.length)
     chess.move(possibleMoves[randomIdx])
     board.position(chess.fen())
+
+    document.getElementById("time").classList.remove('pause');
 }
 
 function moveNumber(){
@@ -285,22 +343,43 @@ function moveNumber(){
     return parseInt(split[last])
 }
 
-function resign(btn){
-    chess.clear()
-    board.position(chess.fen())
+function result(){
 
-    if (game.computer.color == "black"){
-        document.getElementById("black").style.backgroundColor = "green"
+    config.draggable = false
+    config.position = chess.fen
+    document.getElementById("time").classList.add('pause')
+    document.getElementById("resign").disabled = true
+
+    if (game.result == "0-1"){
         document.getElementById("white").style.backgroundColor = "red"
+        document.getElementById("black").style.backgroundColor = "green"
     } 
 
-    else{
-        document.getElementById("black").style.backgroundColor = "red"
+    if (game.result == "1-0"){
         document.getElementById("white").style.backgroundColor = "green"
+        document.getElementById("black").style.backgroundColor = "red"
     }
 
-    alert("Winner is: " + game.computer.username + " (" + game.computer.color + ")")
+    if (game.result == "1/2-1/2"){
+        document.getElementById("white").style.backgroundColor = "red"
+        document.getElementById("black").style.backgroundColor = "red"
+    }
+}
 
+function resign(){
+    
+    // If player is white then score is 0 for White, 1 for Black
+    if (game.human.color == "white"){
+        game.result = "0-1"
+    }
+
+    // Else player is black. Score is 1 for Computer on white, 0 for Player on black
+    else{
+        game.result = "1-0"
+    }
+
+    alert("Player has resigned.\nComputer wins: " + game.computer.username + " (" + game.computer.color + ")")
+    result()
 }
 
 function submitMove(btn){
