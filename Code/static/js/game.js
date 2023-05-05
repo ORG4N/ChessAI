@@ -73,6 +73,7 @@ function countdownTimer(){
                     game.result = "1-0"
                 }
 
+                game.termination = "time forfeit"
                 alert("Player has run out of time.\nComputer wins: " + game.computer.username + " (" + game.computer.color + ")")
                 result()
             } 
@@ -126,7 +127,6 @@ function onDrop (source, target, piece) {
         chess.move({ from: source, to: target, promotion: 'q'})
         board.position(chess.fen())
         document.getElementById("time").classList.add('pause');
-
     }
 
     // Exception will be thrown if move is illegal. 
@@ -179,6 +179,7 @@ function onChange (oldPos, newPos) {
             }
         }
 
+        game.termination = "normal"
         result()
     }
 
@@ -207,26 +208,30 @@ function onChange (oldPos, newPos) {
         item.classList.add("item", "value")                 // Set classes for CSS styling
         item.innerText = "?"                                // Display ? for each item when move has not been made.
 
+        // If turn not 1
+        // If last row id = this row id
+
         // If the turn is currently BLACK then WHITE's turn has just ended. 
         // As white plays first, each time they finish a turn update the history by creating a new row.
         if(chess.turn() == 'b'){
+            if (row.id != table.lastElementChild.id){
+                const num = item.cloneNode(true)        // Create a copy of generic ITEM element for num, white, black
+                const white = item.cloneNode(true)      
+                const black = item.cloneNode(true)
 
-            const num = item.cloneNode(true)        // Create a copy of generic ITEM element for num, white, black
-            const white = item.cloneNode(true)      
-            const black = item.cloneNode(true)
+                num.innerText = values[0]               // First element is move number, example: '1.'
+                white.innerText = values[1]             // Second element is white move, example: 'Qh5'
 
-            num.innerText = values[0]               // First element is move number, example: '1.'
-            white.innerText = values[1]             // Second element is white move, example: 'Qh5'
+                prependHistory(white, values[1][0])
 
-            prependHistory(white, values[1][0])
+                // Add the three items to the row.
+                row.appendChild(num)
+                row.appendChild(white)
+                row.appendChild(black)
 
-            // Add the three items to the row.
-            row.appendChild(num)
-            row.appendChild(white)
-            row.appendChild(black)
-
-            // Add the row to the table.
-            table.appendChild(row) 
+                // Add the row to the table.
+                table.appendChild(row) 
+            }
         }
 
         else{
@@ -287,8 +292,6 @@ function highlightCheck(pos){
     // Search for for bK or wK (black King or white King)
     var toFind = chess.turn() + 'K'
     var square = Object.keys(pos).find(item => pos[item] === toFind);
-        
-    console.log("King is at " + square)
 
     // Make checkmated king square red.
     var $square = $('#board .square-' + square)
@@ -314,6 +317,8 @@ function highlightLastMove(){
     // To: make yellow.
     $square = $('#board .square-' + lastMove.to)
     $square.css('background', background)
+
+    return lastMove.san
 }
 
 // Remove styling from all pieces.
@@ -344,6 +349,17 @@ function moveNumber(){
 }
 
 function result(){
+
+    // Get all moves played. Does not contain move number information.
+    const history = chess.history();
+
+    // Construct a string where each white + black move has move number.
+    var moves = ""
+    for (var i=0; i<history.length; i+=2){
+        moves += i+1 + ". " + history[i] + " " + history[i+1] + " "
+    }
+
+    game.moves = moves
 
     config.draggable = false
     config.position = chess.fen
@@ -378,6 +394,8 @@ function resign(){
         game.result = "1-0"
     }
 
+    game.termination = "abandoned"
+
     alert("Player has resigned.\nComputer wins: " + game.computer.username + " (" + game.computer.color + ")")
     result()
 }
@@ -389,3 +407,12 @@ function submitMove(btn){
 function control(btn){
     alert("Feature not implemented")
 }
+
+
+
+
+
+// Push result to database.
+// When player opens page, load chess.moves onto board.
+// When player opens page, load chess.moves history onto history.
+// If logged in user != game human then disable config.
