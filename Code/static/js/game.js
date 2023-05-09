@@ -1,5 +1,6 @@
 var chess = new Chess() // Use chess.js to create moves
 var board = null
+var countdown = null
 
 // Default board position is classic chess Start position
 const config = {
@@ -12,10 +13,33 @@ const config = {
     onChange
 }
 
+sessionStorage.clear()
+
+window.addEventListener("beforeunload", function () {   
+
+    if(!$('#time').hasClass('pause')) {
+        document.getElementById("time").classList.add('pause');
+    }
+
+    var obj = {
+        "result": game.result,
+        "termination": game.termination,
+        "time"  : countdown/60,
+        "pgn"   : chess.pgn()
+    }
+
+    window.sessionStorage.setItem(game.id, JSON.stringify(obj))
+    
+})
+
 window.addEventListener('load', function () {
 
     // Use chessboardjs to render board on html
     board = Chessboard('board', config)   
+
+    // Load object from session storage. This is used to load a game into a tab that has been refreshed. Otherwise, game must be played from the start.
+    var obj = sessionStorage.getItem(game.id);      
+    obj = jQuery.parseJSON(obj);  
 
     // Resize board to container 
     const h = document.getElementById("board-container").clientHeight + "px"
@@ -37,10 +61,59 @@ window.addEventListener('load', function () {
         document.getElementById("black_name").innerText = game.human.username
         board.orientation('black')
 
-        document.getElementById("time").classList.add('pause');
-        window.setTimeout(makeRandomMove, 250)
+        // Computer to make first move.
+        if (chess.turn() == 'w' && game.result == "Ongoing"){
+            document.getElementById("time").classList.add('pause');
+
+            $.ajax({
+                url: view,
+                type: 'POST',
+                data: {
+                    fen: chess.fen()
+                },
+                success: function (response) {
+                    console.log(response)
+                    makeBotMove(response.source, response.target)
+                },
+                error: function (response) {
+                    window.setTimeout(makeRandomMove, 250)
+                    console.log("error")
+                }
+            });
+        }
 
         countdownTimer()
+    }
+
+    // If game is over - loaded from database.
+    if (game.result != "Ongoing"){
+
+        chess.loadPgn(game.moves)              // Load pgn from session storage. Loads match history moves. Loads board into latest position.
+        var history = chess.history()       // Get match history moves.
+        chess.reset()                       // Reset the board because we need each move to be played for the history html to be created.
+
+        history.forEach(m => {
+            chess.move(m)                   // Make move one by one.
+            board.position(chess.fen())     // Each time a move is made update the board.
+        });
+        
+        resultDisplay()
+    }
+
+
+    // If object exists - basically if page has been refreshed or closed previously
+    else if(obj){
+
+        chess.loadPgn(obj.pgn)              // Load pgn from session storage. Loads match history moves. Loads board into latest position.
+        var history = chess.history()       // Get match history moves.
+        chess.reset()                       // Reset the board because we need each move to be played for the history html to be created.
+
+        history.forEach(m => {
+            chess.move(m)                   // Make move one by one.
+            board.position(chess.fen())     // Each time a move is made update the board.
+        });
+
+        game.time = obj.time
     }
 
 
@@ -57,7 +130,7 @@ function countdownTimer(){
 
         if(!$('#time').hasClass('pause')) {
             var elapsedTime = Date.now() - startTime;
-            var countdown = (game.time*60) - (elapsedTime / 1000).toFixed(0);
+            countdown = (game.time*60) - (elapsedTime / 1000).toFixed(0);
             //document.getElementById("time").innerHTML = countdown.toString().slice(0,3)
 
             document.getElementById("time").innerHTML = fancyTimeFormat(countdown)
@@ -127,15 +200,32 @@ function onDrop (source, target, piece) {
         chess.move({ from: source, to: target, promotion: 'q'})
         board.position(chess.fen())
         document.getElementById("time").classList.add('pause');
+
+        if(!chess.isGameOver()){
+
+            $.ajax({
+                url: view,
+                type: 'POST',
+                data: {
+                    fen: chess.fen()
+                },
+                success: function (response) {
+                    console.log(response)
+                    makeBotMove(response.source, response.target)
+                },
+                error: function (response) {
+                    window.setTimeout(makeRandomMove, 250)
+                    console.log("error")
+                }
+            });
+        }
     }
 
     // Exception will be thrown if move is illegal. 
     catch (e){
         alert(e)
         return 'snapback'
-    }
-
-    window.setTimeout(makeRandomMove, 1000)    
+    }  
 }
 
 // Board position has changed.
@@ -241,6 +331,9 @@ function onChange (oldPos, newPos) {
             black = document.getElementById(row.id).lastChild
             prependHistory(black, values[2][0])
         }
+
+        table.scrollTop = table.scrollHeight - table.clientHeight;
+
     }
 }
 
@@ -327,6 +420,12 @@ function removeHighlight(){
     $('#board .square-55d63').css('opacity', '')
 }
 
+function makeBotMove (source, target){
+    chess.move({ from: source, to: target, promotion: 'q'})
+    board.position(chess.fen())
+    document.getElementById("time").classList.remove('pause');
+}
+
 function makeRandomMove () {
 
     var possibleMoves = chess.moves()
@@ -341,26 +440,7 @@ function makeRandomMove () {
     document.getElementById("time").classList.remove('pause');
 }
 
-function moveNumber(){
-    const split = chess.fen().split(" ")
-    const last = split.length - 1
-
-    return parseInt(split[last])
-}
-
-function result(){
-
-    // Get all moves played. Does not contain move number information.
-    const history = chess.history();
-
-    // Construct a string where each white + black move has move number.
-    var moves = ""
-    for (var i=0; i<history.length; i+=2){
-        moves += i+1 + ". " + history[i] + " " + history[i+1] + " "
-    }
-
-    game.moves = moves
-
+function resultDisplay(){
     config.draggable = false
     config.position = chess.fen
     document.getElementById("time").classList.add('pause')
@@ -380,6 +460,32 @@ function result(){
         document.getElementById("white").style.backgroundColor = "red"
         document.getElementById("black").style.backgroundColor = "red"
     }
+
+
+}
+
+function result(){
+
+    game.moves = chess.pgn()
+    resultDisplay()
+
+    $.ajax({
+        url: view,
+        type: 'POST',
+        data: {
+            result: game.result,
+            termination: game.termination,
+            moves: game.moves,
+            computer_points: String(game.computer.points),
+            human_points: String(game.human.points)
+        },
+        success: function (response) {
+            console.log("posted")
+        },
+        error: function (response) {
+            console.log("error")
+        }
+    });
 }
 
 function resign(){

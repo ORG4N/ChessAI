@@ -1,10 +1,12 @@
-from flask import render_template, Flask, request, url_for, flash, redirect
+from flask import render_template, Flask, request, url_for, flash, redirect, jsonify
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import sqlite3, os
 from passlib.hash import pbkdf2_sha256
 from models import User, Player, Game
 import random
 
+import chess
+import chess.engine
 
 
 app = Flask(__name__)
@@ -41,40 +43,82 @@ def unauthorized():
 def home():
     return render_template("pages/index.html")
     
-@app.route("/game/bot/<id_>")
+@app.route("/game/bot/<id_>", methods=['GET', 'POST'])
 @login_required
 def game(id_):
-
-    
     conn = get_db_connection()
-    game = conn.execute("SELECT * FROM BotMatch WHERE MatchID = (?)", [id_]).fetchone()     # Fetch MATCH info
-    
-    # 
-    if not game:
-        flash("Game does not exist")
-        return redirect(url_for('play'))
+    game = conn.execute("SELECT * FROM BotMatch WHERE MatchID = (?)", [id_]).fetchone()     # Fetch MATCH info 
 
-    participant1 = game["Participant2"]     # Fetch ID for COMPUTER player
-    participant2 = game["Participant2"]     # Fetch ID for HUMAN player.
+    if request.method == 'POST':
 
-    human = conn.execute("SELECT * FROM HumanParticipant WHERE ParticipantID = (?)", [participant2]).fetchone()
-    player_username = human["Username"]
+        if 'fen' in request.form:
 
-    # Game does not belong to player.
-    if not player_username == current_user.username:
-        return redirect(url_for('play'))
+            computerID = game["Participant1"]
+            computerParticipant = conn.execute("SELECT * FROM ComputerParticipant WHERE ParticipantID = (?)", [computerID]).fetchone()
+            computerPlayer = conn.execute("SELECT * FROM ComputerPlayer WHERE Username = (?)", [computerParticipant["Username"]]).fetchone()
 
-    # Make HUMAN object
-    p_human = Player(human["ParticipantID"], human["Username"], human["Color"], human["Color"])
+            rating = computerPlayer["Rating"]
 
-    # Make COMPUTER object
-    computer = conn.execute("SELECT * FROM ComputerParticipant WHERE ParticipantID = (?)", [participant1]).fetchone()
-    p_computer = Player(computer["ParticipantID"], computer["Username"], computer["Color"], computer["Color"])
+            model = 'maia-' + str(rating) + '.pb.gz'
 
-    # Make MATCH object
-    game_obj = Game(game["MatchID"], p_computer, p_human, game["Event"], game["Site"], game["Date"], game["Round"], game["Result"], game["Time"], game["Termination"], game["Moves"])
+            enginePath = os.getcwd() + '/engine/' + 'lc0.exe'
+            weightsPath = os.getcwd() + '/engine/model_weights/' + model
+            engine = chess.engine.SimpleEngine.popen_uci([enginePath, f"--weights={weightsPath}"])
 
-    conn.close()
+            fen = request.form.get('fen')
+            board = chess.Board(fen)
+
+            result = engine.play(board, chess.engine.Limit(nodes=1))
+
+            engine.quit() 
+
+            source = chess.square_name(result.move.from_square)
+            target = chess.square_name(result.move.to_square)
+
+            return jsonify(model=model, source=source, target=target)
+
+        else:
+            result = request.form.get('result')
+            termination = request.form.get('termination')
+            moves = request.form.get('moves')
+            participant1_points = request.form.get('computer_points')
+            participant2_points = request.form.get('human_points')
+
+            conn.execute("UPDATE BotMatch SET Result = ?, Termination = ?, Moves = ?" 
+                        " WHERE MatchID = ?", (result, termination, moves, id_))
+
+            conn.commit()
+            conn.close()
+
+            return redirect(url_for('play'))
+ 
+    if request.method == 'GET':
+        # If user tries to access route at an ID that does not exist.
+        if not game:
+            flash("Game does not exist")
+            return redirect(url_for('play'))
+
+        participant1 = game["Participant1"]     # Fetch ID for COMPUTER player
+        participant2 = game["Participant2"]     # Fetch ID for HUMAN player.
+
+        human = conn.execute("SELECT * FROM HumanParticipant WHERE ParticipantID = (?)", [participant2]).fetchone()
+        player_username = human["Username"]
+
+        # Game does not belong to player.
+        if not player_username == current_user.username:
+            return redirect(url_for('play'))
+
+        # Make HUMAN object
+        p_human = Player(human["ParticipantID"], human["Username"], human["Color"], human["Points"])
+
+        # Make COMPUTER object
+        computer = conn.execute("SELECT * FROM ComputerParticipant WHERE ParticipantID = (?)", [participant1]).fetchone()
+        p_computer = Player(computer["ParticipantID"], computer["Username"], computer["Color"], computer["Points"])
+
+        # Make MATCH object
+        game_obj = Game(game["MatchID"], p_computer, p_human, game["Event"], game["Site"], game["Date"], game["Round"], game["Result"], game["Time"], game["Termination"], game["Moves"])
+
+        conn.close()
 
     return render_template("pages/game.html", game=game_obj)
 

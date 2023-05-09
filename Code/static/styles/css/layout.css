@@ -116,4 +116,8 @@ body {
   opacity: 0.7;
 }
 
+a {
+  text-decoration: none;
+}
+
 /*# sourceMappingURL=layout.css.map */

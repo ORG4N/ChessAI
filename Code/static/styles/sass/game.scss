@@ -3,14 +3,6 @@
     color:#DBEAFE;
 }
 
-hr{
-    border: none;
-    height: 3px;
-    color: #DBEAFE;  /* old IE */
-    background-color: #DBEAFE;  /* Modern Browsers */
-    width:100%;
-}
-
 #board-container{
     flex-basis: 100%;
     justify-content: center;
@@ -55,6 +47,15 @@ hr{
         }
     }
 
+    hr{
+        border: 2px solid #DBEAFE;
+        width:100%;
+    }
+
+}
+
+.hidden{
+    display:none !important;
 }
 
 .fit{
@@ -129,9 +130,10 @@ hr{
 
             .table{
                 flex: 1 1 auto;
-                overflow-y: auto;
+                overflow-y: scroll;
                 height: 0px;
-                
+                scrollbar-width: thin;
+
                 .header, .value{
                     &:nth-child(1){
                         padding-left: 10px;

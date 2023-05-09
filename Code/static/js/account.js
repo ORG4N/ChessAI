@@ -166,3 +166,11 @@ function togglePassword(button){
         icon.classList.add("fa-eye-slash");
     }
 }
+
+function guest(){
+    alert("Feature not implemented")
+}
+
+function forgot(){
+    alert("Feature not implemented")
+}

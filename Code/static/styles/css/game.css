@@ -3,14 +3,6 @@
   color: #DBEAFE;
 }
 
-hr {
-  border: none;
-  height: 3px;
-  color: #DBEAFE; /* old IE */
-  background-color: #DBEAFE; /* Modern Browsers */
-  width: 100%;
-}
-
 #board-container {
   flex-basis: 100%;
   justify-content: center;
@@ -51,6 +43,14 @@ hr {
 }
 .control-container .bottom .icon {
   color: white;
+}
+.control-container hr {
+  border: 2px solid #DBEAFE;
+  width: 100%;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .fit {
@@ -116,8 +116,9 @@ hr {
 }
 .container .wrapper .row .table {
   flex: 1 1 auto;
-  overflow-y: auto;
+  overflow-y: scroll;
   height: 0px;
+  scrollbar-width: thin;
 }
 .container .wrapper .row .table .header:nth-child(1), .container .wrapper .row .table .value:nth-child(1) {
   padding-left: 10px;

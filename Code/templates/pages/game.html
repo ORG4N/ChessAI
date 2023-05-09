@@ -27,6 +27,7 @@
         }
 
         var game = {
+            "id": {{ game.id|tojson }},
             "computer": computer,
             "human": human,
             "result": {{ game.result|tojson }},
@@ -34,6 +35,8 @@
             "termination": {{ game.termination|tojson }},
             "moves": {{ game.moves|tojson }},
         }
+
+        var view = '{{ url_for("game", id_=game.id) }}'
 
      </script>
 
@@ -97,7 +100,6 @@
                     <button type="button" onclick="submitMove(this)" title="Submit move">
                         <i class="fa-solid fa-arrow-right fa-xl icon" id="p-icon-3"></i>
                     </button>
-
                 </div>
             </div>
         </div>
