@@ -13,8 +13,6 @@ const config = {
     onChange
 }
 
-sessionStorage.clear()
-
 window.addEventListener("beforeunload", function () {   
 
     if(!$('#time').hasClass('pause')) {
@@ -236,6 +234,8 @@ function onChange (oldPos, newPos) {
 
     // If Game is over then alert the winner.
     if(chess.isGameOver()){
+
+        document.getElementById("time").classList.add('pause');
 
         if(chess.isCheckmate()){
             if(chess.turn() == 'w') {
