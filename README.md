@@ -11,9 +11,10 @@ Will eventually need to use LC0 engine via python bindings - and not as CLI. Wil
 For now follow these steps to start project:
 1. Git clone (and cd into working directory)
 2. Create virtual environment:  ```python -m venv .venv```
-3. Install dependencies:        ```pip install -r requirements.txt```
-4. Run application:             ```flask --app app --debug run```
-5. Open webpage in browser (e.g. http://127.0.0.1:5000)
+3. Activate virtual environment:```.venv\Scripts\Activate```
+4. Install dependencies:        ```pip install -r requirements.txt```
+5. Run application:             ```flask --app app --debug run```
+6. Open webpage in browser (e.g. http://127.0.0.1:5000)
 
 ### Recommended browser: Firefox
 Works in Chrome but has some styling issues. Other browsers untested.
