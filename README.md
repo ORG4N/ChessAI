@@ -1,4 +1,4 @@
-![title image](https://github.com/ORG4N/computing-group-project/blob/main/docs/images/3000.png)
+![title image](https://github.com/ORG4N/ChessAI/blob/main/docs/images/3000.png)
 
 <p align="center"><strong>Module Overview</strong>
 <br>
