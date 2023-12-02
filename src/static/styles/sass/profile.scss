@@ -19,6 +19,11 @@ hr{
     width:100%;
 }
 
+hr.thin{
+    height: 2px;
+    margin: 5px 0 10px 0;
+}
+
 .hidden{
     display:none !important;
 }
@@ -30,7 +35,7 @@ hr{
     padding:20px 30px;
     color:#FFFFFF;
     flex-basis: 100%;
-
+    margin-bottom: 20px;
 }
 
 .helper-container{
@@ -41,6 +46,93 @@ hr{
     color:#FFFFFF;
     flex-basis: 100%;
     text-align: center;
+}
+
+.game-container{
+    background-color: #722529;
+    border: 0px;
+    border-radius: 8px;
+    color:#FFFFFF;
+    flex-basis: 100%;
+    text-align: left;
+
+    .indent{
+        background-color: #D8281D;
+        display: flex;
+        align-self: stretch;
+        width: 3%;
+        border: 0px;
+        border-radius: 8px 0px 0px 8px;
+    }
+
+    .participants{
+        flex: 100;
+        align-self: stretch;
+
+        .row{
+            height: 100%;
+        }
+    }
+
+    .performance{
+        align-self: stretch;
+        justify-content: center;
+
+        .row{
+            background-color: black;
+            padding:10px;
+            height: 100%;
+        }
+    }
+
+    .wrapper {
+        padding:20px 30px 20px 10px;
+
+        &:nth-child(4){
+            padding-right: 18px;
+        }
+
+        .event{
+            font-size: large;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .date{
+            font-size: small;
+            font-style: italic;
+        }
+
+        .result{
+            font-size: small;
+            font-weight: bold;
+        }
+
+        .time{
+            font-size: small; 
+        }
+
+        .player{
+            height: 100%;
+            font-size: small;
+            display: flex;
+            align-items: center;
+
+            .team{
+                font-size: small;
+            }
+
+            .pic{
+                height: 32px;
+                width: 32px;
+            }
+
+            .player-username{
+                font-size: medium;
+                font-weight: bold;
+            }
+        }
+    }
 }
 
 .container{
@@ -61,6 +153,8 @@ hr{
         flex: 70;
         background-color: #1E1E1E;
     }
+
+    .nogap{gap:0px !important;}
 
     .wrapper{
         display:flex;
@@ -175,7 +269,8 @@ hr{
             }
 
             .selected-btn{
-                border: solid 2px white
+                border: solid 2px white;
+                margin: -2px;
             }
         }
     }

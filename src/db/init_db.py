@@ -13,9 +13,10 @@ time = ['1', '3', '5', '10']
 
 for i in elo:
     username = 'BOT ' + i
-    cur.execute("INSERT INTO ComputerPlayer (Username, Rating) VALUES (?, ?)",
-                (username, i)
-                )
+    cur.execute("INSERT INTO Bot (Username, Rating) VALUES (?, ?)",
+            (username, i)
+            )
+
     
 for i in time:
     name = i + ' min'

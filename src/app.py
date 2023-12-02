@@ -25,7 +25,7 @@ def get_db_connection():
 @login_manager.user_loader
 def load_user(user_id):
    conn = get_db_connection()
-   user = conn.execute("SELECT * from HumanPlayer where PlayerID = (?)", [user_id]).fetchone()
+   user = conn.execute("SELECT * from Player where PlayerID = (?)", [user_id]).fetchone()
    conn.close()
 
    if user is None:
@@ -47,18 +47,21 @@ def home():
 @login_required
 def game(id_):
     conn = get_db_connection()
-    game = conn.execute("SELECT * FROM BotMatch WHERE MatchID = (?)", [id_]).fetchone()     # Fetch MATCH info 
+    game = conn.execute("SELECT * FROM Match WHERE MatchID = (?)", [id_]).fetchone()     # Fetch MATCH info 
 
     if request.method == 'POST':
 
+        # Computer (AKA Bot) turn
         if 'fen' in request.form:
 
-            computerID = game["Participant1"]
-            computerParticipant = conn.execute("SELECT * FROM ComputerParticipant WHERE ParticipantID = (?)", [computerID]).fetchone()
-            computerPlayer = conn.execute("SELECT * FROM ComputerPlayer WHERE Username = (?)", [computerParticipant["Username"]]).fetchone()
+            computerID = game["Bot"]            # Fetch ID for COMPUTER player
+            playerID = current_user.get_id()    # Fetch ID for HUMAN player
 
-            rating = computerPlayer["Rating"]
+            # Find MatchBot record
+            bot = conn.execute("SELECT * FROM MatchBot WHERE (MatchID, BotID) = (?, ?)", [id_, computerID]).fetchone()
 
+            # Get rating and form string to create model path
+            rating = bot["Rating"]
             model = 'maia-' + str(rating) + '.pb.gz'
 
             enginePath = os.getcwd() + '/engine/' + 'lc0.exe'
@@ -81,10 +84,10 @@ def game(id_):
             result = request.form.get('result')
             termination = request.form.get('termination')
             moves = request.form.get('moves')
-            participant1_points = request.form.get('computer_points')
-            participant2_points = request.form.get('human_points')
+            bot_points = request.form.get('computer_points')
+            player_points = request.form.get('human_points')
 
-            conn.execute("UPDATE BotMatch SET Result = ?, Termination = ?, Moves = ?" 
+            conn.execute("UPDATE Match SET Result = ?, Termination = ?, Moves = ?" 
                         " WHERE MatchID = ?", (result, termination, moves, id_))
 
             conn.commit()
@@ -92,28 +95,36 @@ def game(id_):
 
             return redirect(url_for('play'))
  
+    # Accessing the game after creation (such as via refreshing the page or reopening on new tab)
     if request.method == 'GET':
+
         # If user tries to access route at an ID that does not exist.
         if not game:
             flash("Game does not exist")
             return redirect(url_for('play'))
+        
+        computerID = game["Bot"]            # Fetch ID for COMPUTER player
+        playerID = current_user.get_id()    # Fetch ID for HUMAN player
 
-        participant1 = game["Participant1"]     # Fetch ID for COMPUTER player
-        participant2 = game["Participant2"]     # Fetch ID for HUMAN player.
-
-        human = conn.execute("SELECT * FROM HumanParticipant WHERE ParticipantID = (?)", [participant2]).fetchone()
-        player_username = human["Username"]
+        # Find MatchPlayer record and then get username from Player's account table
+        player = conn.execute("SELECT * FROM MatchPlayer WHERE (MatchID, PlayerID) = (?, ?)", [id_, playerID]).fetchone()
+        playerAccount = conn.execute("SELECT * FROM Player WHERE (PlayerID) = (?)", [playerID]).fetchone()
+        username = playerAccount["Username"]
 
         # Game does not belong to player.
-        if not player_username == current_user.username:
+        if not username == current_user.username:
             return redirect(url_for('play'))
+        
+        # Find MatchBot record
+        bot = conn.execute("SELECT * FROM MatchBot WHERE (MatchID, BotID) = (?, ?)", [id_, computerID]).fetchone()
 
         # Make HUMAN object
-        p_human = Player(human["ParticipantID"], human["Username"], human["Color"], human["Points"])
+        p_human = Player(player["PlayerID"], username , player["Color"], player["Points"])
 
         # Make COMPUTER object
-        computer = conn.execute("SELECT * FROM ComputerParticipant WHERE ParticipantID = (?)", [participant1]).fetchone()
-        p_computer = Player(computer["ParticipantID"], computer["Username"], computer["Color"], computer["Points"])
+        bot_username = conn.execute("SELECT * FROM Bot WHERE (BotID) = (?)", [computerID]).fetchone()
+        bot_username = bot_username["Username"]
+        p_computer = Player(bot["BotID"], bot_username , bot["Color"], bot["Points"])
 
         # Make MATCH object
         game_obj = Game(game["MatchID"], p_computer, p_human, game["Event"], game["Site"], game["Date"], game["Round"], game["Result"], game["Time"], game["Termination"], game["Moves"])
@@ -127,7 +138,7 @@ def game(id_):
 def play():
 
     conn = get_db_connection()
-    computer_players = conn.execute('SELECT * FROM ComputerPlayer').fetchall()
+    bots = conn.execute('SELECT * FROM Bot').fetchall()
     time_control = conn.execute('SELECT * FROM TimeControl').fetchall()
     conn.close()
 
@@ -141,7 +152,7 @@ def play():
             flash('Something went wrong... Please refresh the page and try again!')
             return redirect(url_for('play'))
         
-        else:   # Submit form to crate game.
+        else:   # Submit form to create game.
             
             # If side is not black or white then it is either RAND or invalid. Either way just select a random side value.
             side_choices = ["white", "black"]
@@ -152,46 +163,43 @@ def play():
             cursor = conn.cursor()
 
             # See if difficulty exists in db
-            difficulty_get = conn.execute("SELECT * FROM ComputerPlayer WHERE Rating = (?)", [diff]).fetchone()
+            difficulty_get = conn.execute("SELECT * FROM Bot WHERE Rating = (?)", [diff]).fetchone()
             if not difficulty_get:
                 flash('Opponent is invalid.')
                 return redirect(url_for('play'))
-
+            else:
+                bot_id = difficulty_get["BotID"]
+                
             # See if time exists in db
             time_get = conn.execute("SELECT * FROM TimeControl WHERE Value = (?)", [time]).fetchone()
             if not time_get:
                 flash('Time is invalid.')
                 return redirect(url_for('play'))
+            
+            player_id = current_user.get_id()
 
+            # Create match
+            cursor.execute('INSERT INTO Match (Bot, Player, Event, Site, Round, Result, Time, Termination) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (bot_id, player_id, "Bot Match", "ChessAI.com", "?", "Ongoing", time, "?"))
+            
+            game_id =  cursor.lastrowid
 
             # Create Player participant
-            cursor.execute('INSERT INTO HumanParticipant (Username, Color, Points) VALUES (?, ?, ?)',
-                        (current_user.username, side, 0))
+            cursor.execute('INSERT INTO MatchPlayer (MatchID, PlayerID, Color, Points) VALUES (?, ?, ?, ?)',
+                        (game_id, player_id, side, 0))
 
-            p2 = cursor.lastrowid
-
-            # Create Computer participant
+            # Create Bot participant
             side_choices.remove(side)
-
-            c_username = difficulty_get['Username']
-            c_color = side_choices[0]
-            
-            cursor.execute('INSERT INTO ComputerParticipant (Username, Color, Points) VALUES (?, ?, ?)',
-                        (c_username, c_color, 0))
-
-            p1 = cursor.lastrowid
-
-            cursor.execute('INSERT INTO BotMatch (Participant1, Participant2, Event, Site, Round, Result, Time, Termination) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                        (p1, p2, "Bot Match", "ChessAI.com", "?", "Ongoing", time, "?"))
-            
-            game_id = cursor.lastrowid
+            side = side_choices[0]
+            cursor.execute('INSERT INTO MatchBot (MatchID, BotID, Color, Points) VALUES (?, ?, ?, ?)',
+                        (game_id, bot_id, side, 0))
 
             conn.commit()
             conn.close()
 
             return redirect(url_for('game', id_=game_id))
 
-    return render_template("pages/play.html", bots=computer_players, times=time_control)
+    return render_template("pages/play.html", bots=bots, times=time_control)
 
 @app.route("/account")
 def account():  
@@ -227,7 +235,7 @@ def login():
         else:
             # SELECT entry where username matches input username
             conn = get_db_connection()
-            user_exists = conn.execute("SELECT * FROM HumanPlayer WHERE Username = (?)", [username]).fetchone()
+            user_exists = conn.execute("SELECT * FROM Player WHERE Username = (?)", [username]).fetchone()
             conn.close()
 
             # If there exists a field for the input USERNAME then verify password against hash.
@@ -284,7 +292,7 @@ def register():
             if password1 == password2:
                 conn = get_db_connection()
 
-                usernamecheck = conn.execute("SELECT * FROM HumanPlayer WHERE Username = ?", [username]).fetchall()
+                usernamecheck = conn.execute("SELECT * FROM Player WHERE Username = ?", [username]).fetchall()
 
                 # Username already exists so do nothing
                 if usernamecheck:                
@@ -300,8 +308,8 @@ def register():
 
                     # Create row in database
                     cursor = conn.cursor()
-                    cursor.execute('INSERT INTO HumanPlayer (Username, Password, Online, Biography, Picture, Wins, Losses, Draws) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                                (username, password, "Currently online", "No biography", "None", 0, 0, 0))
+                    cursor.execute('INSERT INTO Player (Username, Password, Status, Biography, Picture, Wins, Losses, Draws) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                                (username, password, "status_null", "biography_null", "picture_null", 0, 0, 0))
                     
                     # Get the ID of the row just created
                     player_id = cursor.lastrowid
@@ -330,4 +338,12 @@ def learn():
 @app.route("/profile")
 @login_required
 def profile():
-    return render_template("pages/profile.html")
+
+    # Get Account ID
+    id = current_user.get_id()
+
+    # Search all matches where human participant username matches current user profile
+    conn = get_db_connection()
+    fetch = conn.execute("SELECT * FROM Match WHERE Player = (?)", [id]).fetchall()
+
+    return render_template("pages/profile.html", games=fetch)

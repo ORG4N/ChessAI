@@ -16,6 +16,11 @@ hr {
   width: 100%;
 }
 
+hr.thin {
+  height: 2px;
+  margin: 5px 0 10px 0;
+}
+
 .hidden {
   display: none !important;
 }
@@ -27,6 +32,7 @@ hr {
   padding: 20px 30px;
   color: #FFFFFF;
   flex-basis: 100%;
+  margin-bottom: 20px;
 }
 
 .helper-container {
@@ -37,6 +43,78 @@ hr {
   color: #FFFFFF;
   flex-basis: 100%;
   text-align: center;
+}
+
+.game-container {
+  background-color: #722529;
+  border: 0px;
+  border-radius: 8px;
+  color: #FFFFFF;
+  flex-basis: 100%;
+  text-align: left;
+}
+.game-container .indent {
+  background-color: #D8281D;
+  display: flex;
+  align-self: stretch;
+  width: 3%;
+  border: 0px;
+  border-radius: 8px 0px 0px 8px;
+}
+.game-container .participants {
+  flex: 100;
+  align-self: stretch;
+}
+.game-container .participants .row {
+  height: 100%;
+}
+.game-container .performance {
+  align-self: stretch;
+  justify-content: center;
+}
+.game-container .performance .row {
+  background-color: black;
+  padding: 10px;
+  height: 100%;
+}
+.game-container .wrapper {
+  padding: 20px 30px 20px 10px;
+}
+.game-container .wrapper:nth-child(4) {
+  padding-right: 18px;
+}
+.game-container .wrapper .event {
+  font-size: large;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.game-container .wrapper .date {
+  font-size: small;
+  font-style: italic;
+}
+.game-container .wrapper .result {
+  font-size: small;
+  font-weight: bold;
+}
+.game-container .wrapper .time {
+  font-size: small;
+}
+.game-container .wrapper .player {
+  height: 100%;
+  font-size: small;
+  display: flex;
+  align-items: center;
+}
+.game-container .wrapper .player .team {
+  font-size: small;
+}
+.game-container .wrapper .player .pic {
+  height: 32px;
+  width: 32px;
+}
+.game-container .wrapper .player .player-username {
+  font-size: medium;
+  font-weight: bold;
 }
 
 .container {
@@ -55,6 +133,9 @@ hr {
 .container:nth-child(2) {
   flex: 70;
   background-color: #1E1E1E;
+}
+.container .nogap {
+  gap: 0px !important;
 }
 .container .wrapper {
   display: flex;
@@ -151,6 +232,7 @@ hr {
 }
 .container .wrapper .row .selected-btn {
   border: solid 2px white;
+  margin: -2px;
 }
 
 /*# sourceMappingURL=profile.css.map */

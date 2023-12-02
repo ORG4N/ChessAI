@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %} Play Chess {% endblock %}
+{% block title %} {{ current_user.username }} - Profile {% endblock %}
 
 {% block head %}
   {{ super() }}
@@ -208,8 +208,8 @@
 
               <div class="row col">
                 <div class="row">
-                  <div class="item middle selected-btn">
-                    <button class="filter-btn">
+                  <div class="item middle">
+                    <button class="filter-btn selected-btn">
                       <div class="text"> All</div> 
                     </button>
                   </div>
@@ -253,7 +253,7 @@
         </div>
       </div>
 
-
+      {% if not games %}
       <div class="item">
         <div class="helper-container">
           <div class="wrapper">
@@ -263,6 +263,67 @@
           </div>
         </div>
       </div>
+
+      {% else %}
+      {% for game in games %}
+        <div class="item">
+          <div class="game-container" id='{{game["MatchID"]}}'>
+            <div class="row">
+
+              <div class="col indent"></div>
+
+              <div class="col wrapper nogap">
+                <div class="row">
+                  <div class="event"> {{game["Event"]}} </div>
+                </div>
+                <div class="row">
+                  <div class="date"> {{game["Date"][:10]}} </div>
+                </div>
+                <div class="row"> 
+                  <hr class="thin">
+                </div>
+                <div class="row">
+                  <div class="result"> {{game["Result"]}} </div>
+                </div>
+                <div class="row">
+                  <div class="time"> {{game["Time"]|string + " min"}} </div>
+                </div>
+              </div>
+
+              <div class="col wrapper nogap participants">
+                <div class="row">
+
+                  <div class="col player"> 
+                    <div class="row middle team"> White</div>
+                    <img src="static/images/avatar_placeholder.png" alt="Avatar" class="row middle pic"> </img>
+                    <div class="row middle player-username"> Username</div>
+                  </div>
+                  
+                  <div class="col row middle">? - ?</div>
+
+                  <div class="col player"> 
+                    <div class="row middle team"> Black</div>
+                    <img src="static/images/avatar_placeholder.png" alt="Avatar" class="row middle pic"> </img>
+                    <div class="row middle player-username"> Username</div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="col wrapper nogap performance">
+                <div class="row">
+                  <div class="col">
+                    <div class="row middle"> Score</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>  
+      
+      {% endfor %}
+      {% endif %}
 
     </div>
 

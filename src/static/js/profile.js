@@ -55,7 +55,28 @@ window.addEventListener('load', function () {
         });
     }
 
+    const filters = document.getElementsByClassName("filter-btn")
+    
+    for (var i=0; i<filters.length; i++){
+
+        const button = filters[i]
+
+        button.addEventListener('click', function(){
+            selectedFilter(button)
+        })
+    }
+
 })
+
+function selectedFilter(clicked){
+
+    for(const selected of document.getElementsByClassName("selected-btn")){
+        selected.classList.remove("selected-btn")
+    }
+
+    clicked.classList.add("selected-btn")
+
+}
 
 // Show selected section but hide others.
 function content(clicked){
