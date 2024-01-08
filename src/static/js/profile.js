@@ -8,7 +8,7 @@ window.addEventListener('load', function () {
     data = {
         datasets: [{
             data: [won,lost,drawn],
-            backgroundColor: ["blue", "red", "grey"],
+            backgroundColor: ["#0096FF", "#FF1A00", "#A8A8A8"],
             borderWidth:1,
             borderColor: "black"
         }],
@@ -116,3 +116,4 @@ function selected(clicked){
 function edit(btn){
     alert("Feature not implemented")
 }
+

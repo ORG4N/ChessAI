@@ -243,7 +243,7 @@
                   </div>
                   <div class="item middle">
                     <button class="filter-btn">
-                      <div class="text"> 5 min</div> 
+                      <div class="text"> 10 min</div> 
                     </button>
                   </div>
                 </div>
@@ -266,27 +266,43 @@
 
       {% else %}
       {% for game in games %}
-        <div class="item">
-          <div class="game-container" id='{{game["MatchID"]}}'>
+      {% if game.result != "Ongoing" %}
+
+        <a href="/game/bot/{{game.id}}" class="item">
+
+          {% if game.result == "1-0" and game.human.color == "white" %}
+          <div class="game-container win" id='{{game.id}}'>
+          {% elif game.result == "1-0" and game.human.color == "black" %}
+          <div class="game-container lose" id='{{game.id}}'>
+          {% elif game.result == "0-1" and game.human.color == "white" %}
+          <div class="game-container lose" id='{{game.id}}'>
+          {% elif game.result == "0-1" and game.human.color == "black" %}
+          <div class="game-container win" id='{{game.id}}'>
+
+          {% elif game.result == "1/2-1/2" %}
+          <div class="game-container draw" id='{{game.id}}'>
+          {% endif %}
+
+
             <div class="row">
 
               <div class="col indent"></div>
 
               <div class="col wrapper nogap">
                 <div class="row">
-                  <div class="event"> {{game["Event"]}} </div>
+                  <div class="event"> {{game.event}} </div>
                 </div>
                 <div class="row">
-                  <div class="date"> {{game["Date"][:10]}} </div>
+                  <div class="date"> {{game.date[:10]}} </div>
                 </div>
                 <div class="row"> 
                   <hr class="thin">
                 </div>
                 <div class="row">
-                  <div class="result"> {{game["Result"]}} </div>
+                  <div class="termination"> {{game.termination}} </div>
                 </div>
                 <div class="row">
-                  <div class="time"> {{game["Time"]|string + " min"}} </div>
+                  <div class="time"> {{game.time|string + " min"}} </div>
                 </div>
               </div>
 
@@ -296,15 +312,35 @@
                   <div class="col player"> 
                     <div class="row middle team"> White</div>
                     <img src="static/images/avatar_placeholder.png" alt="Avatar" class="row middle pic"> </img>
-                    <div class="row middle player-username"> Username</div>
+                    <div class="row middle player-username"> 
+
+                      {% if game.computer.color == "white" %}
+                        {{game.computer.username}}
+
+                      {% else %}
+                        {{game.human.username}}
+
+                      {% endif %}
+
+                    </div>
                   </div>
                   
-                  <div class="col row middle">? - ?</div>
+                  <div class="col row middle result">{{game.result}}</div>
 
                   <div class="col player"> 
                     <div class="row middle team"> Black</div>
                     <img src="static/images/avatar_placeholder.png" alt="Avatar" class="row middle pic"> </img>
-                    <div class="row middle player-username"> Username</div>
+                    <div class="row middle player-username"> 
+
+                      {% if game.computer.color == "black" %}
+                      {{game.computer.username}}
+
+                      {% else %}
+                        {{game.human.username}}
+
+                      {% endif %}
+
+                    </div>
                   </div>
 
                 </div>
@@ -320,8 +356,9 @@
 
             </div>
           </div>
-        </div>  
+        </a>  
       
+      {% endif %}
       {% endfor %}
       {% endif %}
 
@@ -337,6 +374,7 @@
           </div>
         </div>
       </div>
+
     </div>
 
     <div class="row col hidden" id="friends-section">

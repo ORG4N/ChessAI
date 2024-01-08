@@ -464,6 +464,58 @@ function resultDisplay(){
 
 }
 
+function getPlayerResult(){
+
+    let result_counter_to_update
+
+    // If draw, then increment Draw counter
+    if (game.result == "1/2-1/2"){
+        result_counter_to_update = "draw"
+    }
+
+    // If player is white
+    else if (game.human.color == "white"){
+
+        // If white (aka player) wins, then incremenent Win counter
+        if (game.result == "1-0"){
+            result_counter_to_update = "win"
+        }
+
+        // If white (aka player) loses, then incremenent Loss counter
+        if (game.result == "0-1"){
+            result_counter_to_update = "loss"
+        }
+    }
+
+    // If player is black
+    else{
+
+        // Black loses
+        if (game.result == "1-0"){
+            result_counter_to_update = "loss"
+        }
+
+        // Black wins
+        if (game.result == "0-1"){
+            result_counter_to_update = "win"
+        }
+    }
+
+    console.log(result_counter_to_update)
+
+    $.ajax({
+        url: '/profile',
+        type: 'PATCH',
+        data: {counter: result_counter_to_update},
+        success: function (response) {
+            console.log("Updated + ", result_counter_to_update )
+        },
+        error: function (response) {
+            console.log("error")
+        }
+    });
+}
+
 function result(){
 
     game.moves = chess.pgn()
@@ -481,6 +533,7 @@ function result(){
         },
         success: function (response) {
             console.log("posted")
+            getPlayerResult()
         },
         error: function (response) {
             console.log("error")

@@ -48,17 +48,17 @@ def home():
 def game(id_):
     conn = get_db_connection()
     game = conn.execute("SELECT * FROM Match WHERE MatchID = (?)", [id_]).fetchone()     # Fetch MATCH info 
+    
+    computerID = game["Bot"]            # Fetch ID for COMPUTER player
+    playerID = current_user.get_id()    # Fetch ID for HUMAN player
 
     if request.method == 'POST':
 
         # Computer (AKA Bot) turn
         if 'fen' in request.form:
 
-            computerID = game["Bot"]            # Fetch ID for COMPUTER player
-            playerID = current_user.get_id()    # Fetch ID for HUMAN player
-
-            # Find MatchBot record
-            bot = conn.execute("SELECT * FROM MatchBot WHERE (MatchID, BotID) = (?, ?)", [id_, computerID]).fetchone()
+            # Find Bot record
+            bot = conn.execute("SELECT * FROM Bot WHERE (BotID) = (?)", [computerID]).fetchone()
 
             # Get rating and form string to create model path
             rating = bot["Rating"]
@@ -89,6 +89,12 @@ def game(id_):
 
             conn.execute("UPDATE Match SET Result = ?, Termination = ?, Moves = ?" 
                         " WHERE MatchID = ?", (result, termination, moves, id_))
+            
+            conn.execute("UPDATE MatchBot SET Points = ?" 
+                        " WHERE MatchID = ? AND BotID = ?", (bot_points, id_, computerID))
+            
+            conn.execute("UPDATE MatchPlayer SET Points = ?" 
+                        " WHERE MatchID = ? AND BotID = ?", (player_points, id_, playerID))
 
             conn.commit()
             conn.close()
@@ -330,20 +336,80 @@ def register():
 
     return redirect(url_for('account'))
 
-@app.route("/learn")
+@app.route('/learn')
 @login_required
 def learn():
     return render_template("pages/learn.html")
 
-@app.route("/profile")
+@app.route('/profile', methods=['GET', 'PATCH'])
 @login_required
 def profile():
+
+    if request.method == 'PATCH':
+
+        conn = get_db_connection()
+
+        # Get Account ID
+        id = current_user.get_id()
+        profile = load_user(id)
+
+        # Get value to increment for counter
+        counter_to_increment = request.form['counter']
+
+        # If PATCH request returns draw then update draw counter
+        if counter_to_increment == "draw":
+            increment = int(profile.draws) + 1
+            conn.execute("UPDATE Player SET Draws = Draws + 1 WHERE PlayerID = ?", (id))
+            conn.commit()
+
+        if counter_to_increment == "win":
+            increment = int(profile.wins) + 1
+            conn.execute("UPDATE Player SET Wins = ? WHERE PlayerID = ?", (increment, id))
+            conn.commit()
+            
+        if counter_to_increment == "loss":  
+            increment = 10
+            conn.execute("UPDATE Player SET Losses = Losses + 1 WHERE PlayerID = ?", (id))
+            conn.commit()
+
+        conn.close()
 
     # Get Account ID
     id = current_user.get_id()
 
     # Search all matches where human participant username matches current user profile
     conn = get_db_connection()
-    fetch = conn.execute("SELECT * FROM Match WHERE Player = (?)", [id]).fetchall()
+    all_games = conn.execute("SELECT * FROM Match WHERE Player = (?)", [id]).fetchall()
 
-    return render_template("pages/profile.html", games=fetch)
+    if not all_games:
+        render_template("pages/profile.html")
+
+    # A list that stores all the games queried as objects
+    games = []
+
+    # If games display them
+    if all_games:
+        # For each Match that needs to be displayed - Get Bot & Player usernames and pic
+        for i in all_games:
+
+            match_id = i["MatchID"]
+
+            bot_id = i["Bot"]
+            bot_profile = conn.execute("SELECT * FROM Bot WHERE BotID = (?)", [bot_id]).fetchone()
+            bot_match   = conn.execute("SELECT * FROM MatchBot WHERE BotID = (?) AND MatchID = (?)", [bot_id, match_id]).fetchone()
+            bot = Player(bot_id, bot_profile["Username"], bot_match["Color"], bot_match["Points"])
+
+            human_profile = conn.execute("SELECT * FROM Player WHERE PlayerID = (?)", [id]).fetchone()
+            human_match   = conn.execute("SELECT * FROM MatchPlayer WHERE PlayerID = (?) AND MatchID = (?)", [id, match_id]).fetchone()
+            human = Player(id, human_profile["Username"], human_match["Color"], human_match["Points"])
+
+            game = Game(match_id, bot, human, i["Event"], i["Site"], i["Date"], i["Round"], i["Result"], i["Time"], i["Termination"], i["Moves"])
+            games.append(game)
+
+        conn.close()
+        return render_template("pages/profile.html", games=games, bot=bot)
+    
+    # If no games then omit returning objects games and bot
+    else:
+        conn.close()
+        return render_template("pages/profile.html")

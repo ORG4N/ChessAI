@@ -45,8 +45,28 @@ hr.thin {
   text-align: center;
 }
 
+.win {
+  background-color: rgba(0, 150, 255, 0.7);
+}
+.win .indent {
+  background-color: rgb(0, 150, 255);
+}
+
+.lose {
+  background-color: rgba(255, 26, 0, 0.7);
+}
+.lose .indent {
+  background-color: rgb(255, 26, 0);
+}
+
+.draw {
+  background-color: rgba(168, 168, 168, 0.7);
+}
+.draw .indent {
+  background-color: rgb(168, 168, 168);
+}
+
 .game-container {
-  background-color: #722529;
   border: 0px;
   border-radius: 8px;
   color: #FFFFFF;
@@ -54,7 +74,6 @@ hr.thin {
   text-align: left;
 }
 .game-container .indent {
-  background-color: #D8281D;
   display: flex;
   align-self: stretch;
   width: 3%;
@@ -67,6 +86,9 @@ hr.thin {
 }
 .game-container .participants .row {
   height: 100%;
+}
+.game-container .participants .result {
+  flex-basis: 20%;
 }
 .game-container .performance {
   align-self: stretch;
@@ -92,7 +114,7 @@ hr.thin {
   font-size: small;
   font-style: italic;
 }
-.game-container .wrapper .result {
+.game-container .wrapper .termination {
   font-size: small;
   font-weight: bold;
 }
@@ -104,6 +126,7 @@ hr.thin {
   font-size: small;
   display: flex;
   align-items: center;
+  flex-basis: 40%;
 }
 .game-container .wrapper .player .team {
   font-size: small;
@@ -115,6 +138,8 @@ hr.thin {
 .game-container .wrapper .player .player-username {
   font-size: medium;
   font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .container {
