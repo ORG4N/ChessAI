@@ -7,6 +7,8 @@
     <link rel="shortcut icon" href="#" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/css/layout.css')}}" />
     <script src="https://kit.fontawesome.com/1d66383990.js" crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='node_modules/jquery/dist/jquery.js')}}"></script>
+
 
     <title>{% block title %}{% endblock %} - ChessAI</title>
     {% endblock %}
@@ -70,7 +72,24 @@
       {% endblock %}
     </div>
 
-    {% if not current_user.is_authenticated %}
+    <!-- User is AUTHENTICATED (they are logged into an account)-->
+    {% if current_user.is_authenticated %}
+    <script>
+
+      setInterval(heartbeat, 1000 * 60 * 0.25); // Interval read in miliseconds - so we convert minutes to miliseconds
+
+      // Run this function every 5 minutes to update the last time the user client was active. Used to see if client closed the website.
+      function heartbeat() {
+        $.ajax({
+          url: '/heartbeat',
+          type: 'PATCH',
+          data: [ ]
+        });
+      }
+    </script>
+
+    <!-- User is NOT AUTHENTICATED (they are not logged into an account)-->
+    {% else %}
     <script>
 
       window.addEventListener('load', function () {

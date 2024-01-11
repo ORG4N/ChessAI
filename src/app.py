@@ -4,23 +4,30 @@ import sqlite3, os
 from passlib.hash import pbkdf2_sha256
 from models import User, Player, Game
 import random
+from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
 
 import chess
 import chess.engine
 
 
+# Flask
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True  # Html automatically reloads on server when changes are made and page is refreshed
 app.config['SECRET_KEY'] = os.urandom(24).hex()
 
+# Flask-Login
 login_manager = LoginManager(app)
 login_manager.login_view = "home"
+
+scheduler = BackgroundScheduler()
 
 
 def get_db_connection():
     conn = sqlite3.connect('db/database.sqlite')
     conn.row_factory = sqlite3.Row
     return conn
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -32,17 +39,47 @@ def load_user(user_id):
       return None
    
    else:
-      return User(int(user[0]), user[1], user[2], user[3], user[4], user[5], user[6], user[7], user[8], user[9])
+      return User(int(user[0]), user[1], user[2], user[3], user[4], user[5], user[6], user[7], user[8], user[9], user[10])
+   
+
+def check_active(id):
+
+    user = load_user(id)
+
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_time = datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S")
+
+    previous_time = datetime.strptime(user.last_active, "%Y-%m-%d %H:%M:%S")
+
+    difference = (current_time - previous_time).total_seconds()
+    print(current_time, "\n", previous_time, "\n", difference)
+
+    if difference >= 120:
+
+        conn = get_db_connection()
+        conn.execute("UPDATE Player SET Status = 'Offline' WHERE PlayerID = ?", (id))
+        conn.commit()
+
+        print("Logging out")
+        scheduler.remove_all_jobs()
+        scheduler.shutdown(wait=False)
+        
+
+
+
+
 
 # Redirect user to account if they try to access an authorised route.
 @login_manager.unauthorized_handler
 def unauthorized():
     return redirect(url_for('account'))
 
+# Index page
 @app.route("/")
 def home():
     return render_template("pages/index.html")
     
+# Game matchmaking - currently only bots    
 @app.route("/game/bot/<id_>", methods=['GET', 'POST'])
 @login_required
 def game(id_):
@@ -94,7 +131,7 @@ def game(id_):
                         " WHERE MatchID = ? AND BotID = ?", (bot_points, id_, computerID))
             
             conn.execute("UPDATE MatchPlayer SET Points = ?" 
-                        " WHERE MatchID = ? AND BotID = ?", (player_points, id_, playerID))
+                        " WHERE MatchID = ? AND PlayerID = ?", (player_points, id_, playerID))
 
             conn.commit()
             conn.close()
@@ -139,6 +176,7 @@ def game(id_):
 
     return render_template("pages/game.html", game=game_obj)
 
+# Game creation - currently only BOTs
 @app.route("/play", methods=('GET', 'POST'))
 @login_required
 def play():
@@ -207,6 +245,7 @@ def play():
 
     return render_template("pages/play.html", bots=bots, times=time_control)
 
+# Account creation and login
 @app.route("/account")
 def account():  
 
@@ -219,7 +258,16 @@ def account():
 @app.route('/logout')
 @login_required
 def logout():
+
+    scheduler.shutdown(wait=False)
+
+    id = current_user.get_id()
     logout_user()
+
+    conn = get_db_connection()
+    conn.execute("UPDATE Player SET Status = 'Offline' WHERE PlayerID = ?", (id))
+    conn.commit()
+
     return redirect(url_for('home'))
 
 # Route to handle LOGIN post requests.
@@ -258,6 +306,14 @@ def login():
 
                     # Use FLASK-LOGIN to load the class object as a user.
                     login_user(user)
+
+                    # Update status when login
+                    conn = get_db_connection()
+                    conn.execute("UPDATE Player SET Status = 'Online' WHERE PlayerID = ?", (user.id))
+                    conn.commit()
+
+                    job = scheduler.add_job(check_active, 'interval', [user.id] , minutes=0.5) # Execute function every set interval
+                    scheduler.start()
 
                     return redirect(url_for('account'))
                 
@@ -341,6 +397,7 @@ def register():
 def learn():
     return render_template("pages/learn.html")
 
+# Player profile page - currently only for the client player
 @app.route('/profile', methods=['GET', 'PATCH'])
 @login_required
 def profile():
@@ -413,3 +470,22 @@ def profile():
     else:
         conn.close()
         return render_template("pages/profile.html")
+
+# Check if user is active.    
+@app.route('/heartbeat', methods=['PATCH'])
+@login_required
+def heartbeat():
+
+    if request.method == 'PATCH':
+
+        id = current_user.get_id()
+
+        current_time = datetime.now()
+        date_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        conn = get_db_connection()
+        conn.execute("UPDATE Player SET LastActive = ? WHERE PlayerID = ?", (date_time, id))
+        conn.commit()
+        conn.close()
+
+    return ('', 204)
