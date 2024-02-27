@@ -152,7 +152,6 @@ hr.thin {
 }
 .container:nth-child(1) {
   flex: 30;
-  height: fit-content;
   background-color: #312E2B;
 }
 .container:nth-child(2) {
@@ -166,6 +165,7 @@ hr.thin {
   display: flex;
   flex-direction: column;
   gap: 30px;
+  height: 100%;
 }
 .container .wrapper .col {
   flex-direction: column !important;
@@ -191,6 +191,9 @@ hr.thin {
   display: flex;
   width: 100%;
   align-self: stretch;
+}
+.container .wrapper .row .item #profile_biography {
+  word-break: break-all;
 }
 .container .wrapper .row .item #avatar {
   height: 200px;

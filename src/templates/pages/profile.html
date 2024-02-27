@@ -16,13 +16,13 @@
 
     <div class="row">
       <div class="item middle">
-        <img id="avatar" src="static/images/avatar_placeholder.png" alt="Avatar" title="{{ current_user.picture }}"> 
+        <img id="avatar" src="{{ current_user.picture }}" alt="Avatar failed to load..." title="{{ current_user.username }}'s Profile Picture"> 
       </div>
     </div>
 
     <div class="row">
       <div class="item middle">
-        <div class="username">
+        <div class="username" id="profile_username">
           {{ current_user.username }}
         </div>
       </div>
@@ -34,12 +34,12 @@
       </div>
     </div>
 
-    <div class="row col biography">
+    <div class="row col">
       <div class="item">
         <div class="title"> Biography</div> 
       </div>
       <div class="item">
-        <div class="text"> {{ current_user.biography }}</div> 
+        <div class="text" id="profile_biography"> {{ current_user.biography }}</div> 
       </div>
     </div>
 
@@ -48,7 +48,7 @@
           <hr>
       </div>
     </div>
-
+    
     <div class="row col">
       <div class="item middle">
         <div class="title"> Account Information</div> 
@@ -74,7 +74,7 @@
               </div>
             </div>
             <div class="item middle">
-              <div class="text"> {{ current_user.online }}</div> 
+              <div class="text" id="profile_status"> {{ current_user.online }}</div> 
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
 
     </div>
 
-    <div class="row col">
+    <div class="row col" >
       <div class="row">
         <div class="item left">
           <i class="fa-solid fa-circle-plus fa-fw"></i>
@@ -130,7 +130,7 @@
           <div class="text"> Total Won </div> 
         </div>
         <div class="item right">
-          <div class="text"> {{current_user.wins}} </div> 
+          <div class="text" id="profile_wins"> {{current_user.wins}} </div> 
         </div>
       </div>
       <div class="row">
@@ -141,7 +141,7 @@
           <div class="text"> Total Lost </div> 
         </div>
         <div class="item right">
-          <div class="text"> {{current_user.losses}} </div> 
+          <div class="text" id="profile_losses"> {{current_user.losses}} </div> 
         </div>
       </div>
       <div class="row">
@@ -152,12 +152,12 @@
           <div class="text"> Total Drawn </div> 
         </div>
         <div class="item right">
-          <div class="text"> {{current_user.draws}} </div> 
+          <div class="text" id="profile_draws"> {{current_user.draws}} </div> 
         </div>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin-top: auto">
       <div class="item middle">
         <button class="button" onclick="edit(this)" type="submit" title="Create Account">
           Edit profile

@@ -66,7 +66,34 @@ window.addEventListener('load', function () {
         })
     }
 
+    setInterval(update_current_profile, 1000 * 60 * 0.25); // Interval read in miliseconds - so we convert minutes to miliseconds
+
+
 })
+
+function update_current_profile() {
+    $.ajax({
+      url: '/update',
+      type: 'GET',
+      success: function(response) {
+
+        for (const [key, value] of Object.entries(response)) {
+
+            const element = document.getElementById(key)
+
+            if (key == "avatar"){
+                element.title = value
+            }
+
+            else {
+                element.innerText = value
+            }
+
+        }
+
+      }
+    });
+  }
 
 function selectedFilter(clicked){
 
@@ -116,4 +143,3 @@ function selected(clicked){
 function edit(btn){
     alert("Feature not implemented")
 }
-

@@ -129,7 +129,7 @@
       </div>
     </button>
 
-    <form id="create-dropdown" class="row hidden col" autocomplete="off" method="post" action="{{ url_for('register')}}">
+    <form id="create-dropdown" class="row hidden col" autocomplete="__away" method="post" action="{{ url_for('register')}}">
 
       <hr>
 
@@ -145,7 +145,7 @@
             </div>
 
             <div class="item">
-              <input type="text" id="create-username" name="create_username" value="{{ request.form['create_username'] }}" placeholder="..." required minlength="4" maxlength="20">
+              <input type="text" id="create-username" name="create_username" value="{{ request.form['create_username'] }}" placeholder="..." required minlength="4" maxlength="20" onclick="this.removeAttribute('readonly')" onkeypress="this.removeAttribute('readonly')" onfocusout="this.setAttribute('readonly','');" readonly>
             </div>
           </div>
           
@@ -158,7 +158,7 @@
             </div>
 
             <div class="item">
-              <input type="password" id="create-password-1" name="create_password1" value="{{ request.form['create_password1'] }}" placeholder="..." required minlength="6" maxlength="20">
+              <input type="text" id="create-password-1" name="create_password1" value="{{ request.form['create_password1'] }}" placeholder="..." required minlength="6" maxlength="20" onclick="this.removeAttribute('readonly')" onkeypress="this.removeAttribute('readonly')" onfocusout="this.setAttribute('readonly','');" onkeyup="setType(this)" readonly>
               <button type="button" onclick="togglePassword(this)" title="View password">
                 <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-2"></i>
               </button>
@@ -174,7 +174,7 @@
             </div>
 
             <div class="item">
-              <input type="password" id="create-password-2" name="create_password2" value="{{ request.form['create_password2'] }}" placeholder="..." required minlength="6" maxlength="20">
+              <input type="text" id="create-password-2" name="create_password2" value="{{ request.form['create_password2'] }}" placeholder="..." required minlength="6" maxlength="20" onclick="this.removeAttribute('readonly')" onkeypress="this.removeAttribute('readonly')" onfocusout="this.setAttribute('readonly','');" onkeyup="setType(this)" readonly>
               <button type="button" onclick="togglePassword(this)" title="View password">
                 <i class="fa-solid fa-eye-slash fa-sm password-icon" id="p-icon-3"></i>
               </button>

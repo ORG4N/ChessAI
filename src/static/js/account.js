@@ -167,6 +167,11 @@ function togglePassword(button){
     }
 }
 
+function setType(element){
+    if (element.value.length == 0){ element.setAttribute('type', 'text')}
+    else{ element.setAttribute('type', 'password')}
+}
+
 function guest(){
     alert("Feature not implemented")
 }

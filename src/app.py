@@ -18,10 +18,11 @@ app.config['SECRET_KEY'] = os.urandom(24).hex()
 
 # Flask-Login
 login_manager = LoginManager(app)
-login_manager.login_view = "home"
+login_manager.login_view = "account"
+login_manager.refresh_view = "account"
 
 scheduler = BackgroundScheduler()
-
+scheduler.start()
 
 def get_db_connection():
     conn = sqlite3.connect('db/database.sqlite')
@@ -52,7 +53,7 @@ def check_active(id):
     previous_time = datetime.strptime(user.last_active, "%Y-%m-%d %H:%M:%S")
 
     difference = (current_time - previous_time).total_seconds()
-    print(current_time, "\n", previous_time, "\n", difference)
+    print(difference)
 
     if difference >= 120:
 
@@ -60,13 +61,8 @@ def check_active(id):
         conn.execute("UPDATE Player SET Status = 'Offline' WHERE PlayerID = ?", (id))
         conn.commit()
 
-        print("Logging out")
-        scheduler.remove_all_jobs()
-        scheduler.shutdown(wait=False)
-        
-
-
-
+        print("Stopping scheduler")
+        scheduler.remove_all_jobs()      
 
 
 # Redirect user to account if they try to access an authorised route.
@@ -259,7 +255,8 @@ def account():
 @login_required
 def logout():
 
-    scheduler.shutdown(wait=False)
+    print("Stopping scheduler")
+    scheduler.remove_all_jobs()
 
     id = current_user.get_id()
     logout_user()
@@ -312,8 +309,9 @@ def login():
                     conn.execute("UPDATE Player SET Status = 'Online' WHERE PlayerID = ?", (user.id))
                     conn.commit()
 
-                    job = scheduler.add_job(check_active, 'interval', [user.id] , minutes=0.5) # Execute function every set interval
-                    scheduler.start()
+                    job = scheduler.add_job(check_active, 'interval', [user.id] , minutes=0.25) # Execute function every set interval
+                    scheduler.resume()
+                    print("Starting scheduler")
 
                     return redirect(url_for('account'))
                 
@@ -371,7 +369,7 @@ def register():
                     # Create row in database
                     cursor = conn.cursor()
                     cursor.execute('INSERT INTO Player (Username, Password, Status, Biography, Picture, Wins, Losses, Draws) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                                (username, password, "status_null", "biography_null", "picture_null", 0, 0, 0))
+                                (username, password, "Online", "biography_null", "static/images/pfp/default/placeholder.png", 0, 0, 0))
                     
                     # Get the ID of the row just created
                     player_id = cursor.lastrowid
@@ -485,7 +483,34 @@ def heartbeat():
 
         conn = get_db_connection()
         conn.execute("UPDATE Player SET LastActive = ? WHERE PlayerID = ?", (date_time, id))
+
+        query = conn.execute("SELECT * FROM Player WHERE PlayerID = ?", (id)).fetchone()
+
+        if query["Status"] == 'Offline':
+            conn.execute("UPDATE Player SET Status = 'Online' WHERE PlayerID = ?", (id))
+
         conn.commit()
         conn.close()
 
     return ('', 204)
+
+
+# Get User info  
+@app.route('/update')
+@login_required
+def update():
+
+    id = current_user.get_id()
+    user = load_user(id)
+
+    user_obj = {
+        "profile_username": user.username,
+        "profile_status": user.online,
+        "profile_biography": user.biography,
+        "avatar": user.picture,
+        "profile_wins": user.wins,
+        "profile_losses": user.losses,
+        "profile_draws": user.draws,
+    }
+
+    return user_obj
