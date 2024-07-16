@@ -4,6 +4,7 @@ import sqlite3, os
 from passlib.hash import pbkdf2_sha256
 from models import User, Player, Game
 import random
+import json
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -62,8 +63,40 @@ def check_active(id):
         conn.commit()
 
         print("Stopping scheduler")
-        scheduler.remove_all_jobs()      
+        scheduler.remove_all_jobs()    
 
+
+def bot_game_obj(id, query, display=None):
+
+    conn = get_db_connection()
+
+    # A list that stores all the game objects
+    games = []
+
+    if display:
+        query = query[:display]
+
+    # For each Match that needs to be displayed - Get Bot & Player usernames and pic
+    for i in query:
+
+        match_id = i["MatchID"]
+
+        bot_id = i["Bot"]
+        bot_profile = conn.execute("SELECT * FROM Bot WHERE BotID = (?)", [bot_id]).fetchone()
+        bot_match   = conn.execute("SELECT * FROM MatchBot WHERE BotID = (?) AND MatchID = (?)", [bot_id, match_id]).fetchone()
+        bot = Player(bot_id, bot_profile["Username"], bot_match["Color"], bot_match["Points"])
+
+        human_profile = conn.execute("SELECT * FROM Player WHERE PlayerID = (?)", [id]).fetchone()
+        human_match   = conn.execute("SELECT * FROM MatchPlayer WHERE PlayerID = (?) AND MatchID = (?)", [id, match_id]).fetchone()
+        human = Player(id, human_profile["Username"], human_match["Color"], human_match["Points"])
+
+        game = Game(match_id, bot, human, i["Event"], i["Site"], i["Date"], i["Round"], i["Result"], i["Time"], i["Termination"], i["Moves"])
+        games.append(game)
+
+    conn.close()
+    return games
+
+    
 
 # Redirect user to account if they try to access an authorised route.
 @login_manager.unauthorized_handler
@@ -400,6 +433,10 @@ def learn():
 @login_required
 def profile():
 
+    # On page load, load up to 20 games.
+    display = request.args.get('display', default = 20, type = int)
+    if display < 20: display = 20   # If user manually sets route to a negative number or 0 (which is invalid) reset the display filter to 20
+
     if request.method == 'PATCH':
 
         conn = get_db_connection()
@@ -429,45 +466,34 @@ def profile():
 
         conn.close()
 
-    # Get Account ID
-    id = current_user.get_id()
+    if request.method == 'GET':
 
-    # Search all matches where human participant username matches current user profile
-    conn = get_db_connection()
-    all_games = conn.execute("SELECT * FROM Match WHERE Player = (?)", [id]).fetchall()
+        # Get Account ID
+        id = current_user.get_id()
 
-    if not all_games:
-        render_template("pages/profile.html")
+        # Search all matches where human participant username matches current user profile
+        conn = get_db_connection()
 
-    # A list that stores all the games queried as objects
-    games = []
+        ongoing_games = conn.execute("SELECT * FROM Match WHERE Player = (?) AND Result = (?)", [id, "Ongoing"]).fetchall()
+        finished_games = conn.execute("SELECT * FROM Match WHERE Player = (?) AND Result != (?)", [id, "Ongoing"]).fetchall()
 
-    # If games display them
-    if all_games:
-        # For each Match that needs to be displayed - Get Bot & Player usernames and pic
-        for i in all_games:
+        total = len(finished_games)
 
-            match_id = i["MatchID"]
+        # If games display them
+        if ongoing_games or finished_games:
 
-            bot_id = i["Bot"]
-            bot_profile = conn.execute("SELECT * FROM Bot WHERE BotID = (?)", [bot_id]).fetchone()
-            bot_match   = conn.execute("SELECT * FROM MatchBot WHERE BotID = (?) AND MatchID = (?)", [bot_id, match_id]).fetchone()
-            bot = Player(bot_id, bot_profile["Username"], bot_match["Color"], bot_match["Points"])
+            ongoing = bot_game_obj(id, ongoing_games)
+            games = bot_game_obj(id, finished_games, display)
 
-            human_profile = conn.execute("SELECT * FROM Player WHERE PlayerID = (?)", [id]).fetchone()
-            human_match   = conn.execute("SELECT * FROM MatchPlayer WHERE PlayerID = (?) AND MatchID = (?)", [id, match_id]).fetchone()
-            human = Player(id, human_profile["Username"], human_match["Color"], human_match["Points"])
-
-            game = Game(match_id, bot, human, i["Event"], i["Site"], i["Date"], i["Round"], i["Result"], i["Time"], i["Termination"], i["Moves"])
-            games.append(game)
-
-        conn.close()
-        return render_template("pages/profile.html", games=games, bot=bot)
-    
-    # If no games then omit returning objects games and bot
-    else:
-        conn.close()
-        return render_template("pages/profile.html")
+            conn.close()
+            return render_template("pages/profile.html", games=games, ongoing=ongoing, total=total)
+        
+                
+        # If no games then omit returning objects games and bot
+        else:
+            conn.close()
+            return render_template("pages/profile.html")
+        
 
 # Check if user is active.    
 @app.route('/heartbeat', methods=['PATCH'])

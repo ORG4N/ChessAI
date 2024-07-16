@@ -28,6 +28,10 @@ hr.thin{
     display:none !important;
 }
 
+.scrollable{
+    overflow-y: auto;
+}
+
 .recent-container{
     background-color: #282727;
     border: 0px;
@@ -41,6 +45,16 @@ hr.thin{
 .helper-container{
     background-color: #A45A52;
     border: 0px;
+    border-radius: 8px;
+    padding:20px 30px;
+    color:#FFFFFF;
+    flex-basis: 100%;
+    text-align: center;
+}
+
+.load-container{
+    background-color: #312E2B;
+    border: 1px;
     border-radius: 8px;
     padding:20px 30px;
     color:#FFFFFF;
@@ -72,6 +86,30 @@ hr.thin{
     }
 }
 
+.ongoing {
+    background: linear-gradient(-45deg, #ee9b00, #cdb4db, #348aa7, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+
+    .indent{
+        background: linear-gradient(-45deg, #ee9b00, #cdb4db, #348aa7, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+    }
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 .game-container{
     border: 0px;
     border-radius: 8px;
@@ -90,10 +128,7 @@ hr.thin{
     .participants{
         flex: 100;
         align-self: stretch;
-
-        .row{
-            height: 100%;
-        }
+        align-items: center;
 
         .result{
             flex-basis: 20%;
@@ -106,9 +141,9 @@ hr.thin{
         justify-content: center;
 
         .row{
+            height:100%;
             background-color: black;
             padding:10px;
-            height: 100%;
         }
     }
 
@@ -140,14 +175,23 @@ hr.thin{
         }
 
         .player{
-            height: 100%;
             font-size: small;
             display: flex;
             align-items: center;
             flex-basis: 40%;
+            gap: 8px;
 
             .team{
                 font-size: small;
+            }
+
+            .player-white{
+                border-top: 3px solid white;
+                padding-top:5px;
+            }
+            .player-black{
+                border-top: 3px solid black;
+                padding-top:5px;
             }
 
             .pic{
@@ -187,10 +231,10 @@ hr.thin{
 
     .wrapper{
         display:flex;
+        align-items: stretch;
         flex-direction: column;
         gap:30px;
-        height:100%;
-
+        
         .col{
             flex-direction: column !important;
         }
@@ -228,6 +272,11 @@ hr.thin{
                     height:200px;
                     width:200px;
                     border-radius: 50%;
+                }
+
+                .showing{
+                    padding-top:10px;
+                    opacity: 0.7;
                 }
 
                 .username{

@@ -86,11 +86,11 @@ body {
   flex-direction: column;
   width: 70%;
   margin-left: 10px;
+  margin-right: 3%;
   padding: 10px;
 }
 .box-container .box-right .title {
   font-weight: 600;
-  justify-content: center;
 }
 
 /*# sourceMappingURL=index.css.map */

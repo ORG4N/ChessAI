@@ -1,9 +1,59 @@
 window.addEventListener('load', function () {
 
+    // Set the href for Show More button to reload the page with 20 more results
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    let display = 20;
+
+    // On load, check for display param to calculate next display value.
+    if (params.has('display')){
+
+        display = parseInt(params.get("display"));
+        if (display < 20 || isNaN(display)){
+            display = 20;
+        }
+    }
+
+    display += 20;
+    params.set('display', display);
+    document.getElementById("more").href = '/profile?' + params.toString();
+
+    console.log(params)
+
+    // On load, check for filter param to apply to all searched games.
+    if (params.has('filter')){
+        const filter = "toggle-" + params.get('filter');
+        toggle_select(filter)
+    }
+
+
+    // Initialise donut
     const donut = document.getElementById('donut');
-    won = 1;
-    lost = 1;
-    drawn = 1;
+    let won = 0;
+    let lost = 0;
+    let drawn = 0;
+
+    // Find all divs representing games played.
+    const completed = document.getElementById("completed");
+    const children = completed.children;
+
+    let total = sessionStorage.getItem("total");
+    if(children.length >= total){ document.getElementById('more').remove(); }
+
+    // Only need to iterate over the most recent 20 games, but it is possible for there to be less than 20 games in total so decide which number is less to avoid index errors  
+    let recent = 20;
+    if (children.length < recent){recent = children.length;}
+
+    for(let i=0; i<recent; i++){
+        let child = children[i];
+
+        if(child.children[0].classList.contains("lose")){ lost++;}
+        else if(child.children[0].classList.contains("win")){ won++;}
+        else {drawn++;}
+    }
+
+    document.getElementById("win-lose").innerText = won + "W " + lost + "L " + drawn + "D";
+
 
     data = {
         datasets: [{
@@ -62,7 +112,7 @@ window.addEventListener('load', function () {
         const button = filters[i]
 
         button.addEventListener('click', function(){
-            selectedFilter(button)
+            selected_filter(button)
         })
     }
 
@@ -95,7 +145,7 @@ function update_current_profile() {
     });
   }
 
-function selectedFilter(clicked){
+function selected_filter(clicked){
 
     for(const selected of document.getElementsByClassName("selected-btn")){
         selected.classList.remove("selected-btn")
@@ -103,6 +153,103 @@ function selectedFilter(clicked){
 
     clicked.classList.add("selected-btn")
 
+}
+
+function toggle_select(button){
+
+    // Extract appropriate filter name from button id.
+    const filter_name = button.split('-').pop();
+
+    // Get current URL then either overwrite or append new filter.
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    
+    params.set('filter', filter_name);
+
+    // Add new url to href field of the show more button so when user loads more search results, the same filters are applied.
+    const button_element = document.getElementById("more");
+    if (button_element !== null){ button_element.href = url + '&filter=3min';} !!!!!
+
+    // Element that contains all completed games to filter.
+    const container = document.getElementById("completed");
+    const children = container.children;
+
+    // Unhide all hidden children.
+    const hidden = container.querySelectorAll(".hidden");
+    for (var i = 0; i < hidden.length; i++) {
+        hidden[i].classList.remove("hidden");
+    }
+
+    // Hide display count.
+    const count = document.getElementById("total");
+    count.classList.add("hidden");
+
+    // Show all games.
+    if (button == 'toggle-all'){
+        count.classList.remove("hidden");
+    }
+
+    // Show all games with Human players.
+    if (button == 'toggle-friends'){
+        for (game of children){
+            const event = game.querySelectorAll(".event");
+            if (event[0].innerText != 'PLAYER MATCH'){
+                game.classList.add('hidden');
+            }
+        }
+
+    }
+
+    // Show all games with Bot players.
+    if (button == 'toggle-bots'){
+        for (game of children){
+            const event = game.querySelectorAll(".event");
+            if (event[0].innerText != 'BOT MATCH'){
+                game.classList.add('hidden');
+            }
+        }
+
+    }
+
+    // Show all games where game length is 1 minute.
+    if (button == 'toggle-1minute'){
+        for (game of children){
+            const time = game.querySelectorAll(".time");
+            if (time[0].innerText != '1 min'){
+                game.classList.add('hidden');
+            }
+        }
+    }
+
+    // Show all games where game length is 3 minutes.
+    if (button == 'toggle-3minute'){
+        for (game of children){
+            const time = game.querySelectorAll(".time");
+            if (time[0].innerText != '3 min'){
+                game.classList.add('hidden');
+            }
+        }
+    }
+    
+    // Show all games where game length is 5 minutes.
+    if (button == 'toggle-5minute'){
+        for (game of children){
+            const time = game.querySelectorAll(".time");
+            if (time[0].innerText != '5 min'){
+                game.classList.add('hidden');
+            }
+        }
+    }
+
+    // Show all games where game length is 10 minutes.
+    if (button == 'toggle-10minute'){
+        for (game of children){
+            const time = game.querySelectorAll(".time");
+            if (time[0].innerText != '10 min'){
+                game.classList.add('hidden');
+            }
+        }
+    }
 }
 
 // Show selected section but hide others.

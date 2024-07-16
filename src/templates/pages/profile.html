@@ -7,11 +7,17 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/css/profile.css') }}">
   <script src="{{url_for('static', filename='js/profile.js')}}"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const total = "{{total}}";
+    sessionStorage.setItem("total", total);
+  </script>
+
 {% endblock %}
 
 {% block content %}
 
-<div class="container">
+<div class="container" style="height:fit-content;">
   <div class="wrapper">
 
     <div class="row">
@@ -57,7 +63,7 @@
       <div class="row">
         <div class="row col">
           <div class="item middle">
-            <div class="icon" title="Create Account">
+            <div class="icon" title="Account Created">
               <i class="fa-solid fa-square-plus fa-2x fa-fw"></i>
             </div>
           </div>
@@ -183,68 +189,72 @@
       </button>
     </div>
 
-    <div class="row col" id="history-section">
-      <div class="item">
-        <div class="recent-container">
-          <div class="wrapper">
 
-            <div class="row">
+    <div id="history-section">
 
-              <div class="item left">
-                <div class="row col">
-                  <div class="item middle">
-                    Recent 20 Games
-                  </div>
-                  <div class="item middle" style="height:100px">
-                    <canvas id="donut"></canvas>
-                  </div>
-                  <div class="row">
-                    <div class="item middle" id="win-lose">
-                      ?W ?L ?D
+      <div class="row col" id="recent">
+        <div class="item">
+          <div class="recent-container">
+            <div class="wrapper">
+  
+              <div class="row">
+  
+                <div class="item left">
+                  <div class="row col">
+                    <div class="item middle">
+                      Recent 20 Games
+                    </div>
+                    <div class="item middle" style="height:100px">
+                      <canvas id="donut"></canvas>
+                    </div>
+                    <div class="row">
+                      <div class="item middle" id="win-lose">
+                        0W 0L 0D
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="row col">
-                <div class="row">
-                  <div class="item middle">
-                    <button class="filter-btn selected-btn">
-                      <div class="text"> All</div> 
-                    </button>
+  
+                <div class="row col">
+                  <div class="row">
+                    <div class="item middle">
+                      <button class="filter-btn selected-btn" id="toggle-all" onclick="toggle_select(this.id)">
+                        <div class="text"> All</div> 
+                      </button>
+                    </div>
+                    <div class="item middle">
+                      <button class="filter-btn" id="toggle-friends" onclick="toggle_select(this.id)">
+                        <div class="text"> Friends only</div> 
+                      </button>
+                    </div>
+                    <div class="item middle">
+                      <button class="filter-btn" id="toggle-bots" onclick="toggle_select(this.id)">
+                        <div class="text"> Bots only</div> 
+                      </button>
+                    </div>
                   </div>
-                  <div class="item middle">
-                    <button class="filter-btn">
-                      <div class="text"> Friends only</div> 
-                    </button>
-                  </div>
-                  <div class="item middle">
-                    <button class="filter-btn">
-                      <div class="text"> Bots only</div> 
-                    </button>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="item middle">
-                    <button class="filter-btn">
-                      <div class="text"> 1 min</div> 
-                    </button>
-                  </div>
-                  <div class="item middle">
-                    <button class="filter-btn">
-                      <div class="text"> 3 min</div> 
-                    </button>
-                  </div>
-                  <div class="item middle">
-                    <button class="filter-btn">
-                      <div class="text"> 5 min</div> 
-                    </button>
-                  </div>
-                  <div class="item middle">
-                    <button class="filter-btn">
-                      <div class="text"> 10 min</div> 
-                    </button>
+  
+                  <div class="row">
+                    <div class="item middle">
+                      <button class="filter-btn" id="toggle-1minute" onclick="toggle_select(this.id)">
+                        <div class="text"> 1 min</div> 
+                      </button>
+                    </div>
+                    <div class="item middle">
+                      <button class="filter-btn" id="toggle-3minute" onclick="toggle_select(this.id)">
+                        <div class="text"> 3 min</div> 
+                      </button>
+                    </div>
+                    <div class="item middle">
+                      <button class="filter-btn" id="toggle-5minute" onclick="toggle_select(this.id)">
+                        <div class="text"> 5 min</div> 
+                      </button>
+                    </div>
+                    <div class="item middle">
+                      <button class="filter-btn" id="toggle-10minute" onclick="toggle_select(this.id)">
+                        <div class="text"> 10 min</div> 
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -253,7 +263,7 @@
         </div>
       </div>
 
-      {% if not games %}
+      {% if not games and not ongoing %}
       <div class="item">
         <div class="helper-container">
           <div class="wrapper">
@@ -265,10 +275,96 @@
       </div>
 
       {% else %}
-      {% for game in games %}
-      {% if game.result != "Ongoing" %}
 
-        <a href="/game/bot/{{game.id}}" class="item">
+      {% if ongoing %}
+        <div class="row col" id="ongoing" style="padding-bottom: 20px;">
+        {% for game in ongoing|reverse %}
+          <a href="/game/bot/{{game.id}}" class="item" title="{{game.date[:-3]}}">
+
+          <div class="game-container ongoing" id='{{game.id}}'>
+
+            <div class="row">
+
+              <div class="col indent"></div>
+
+              <div class="col wrapper nogap">
+                <div class="row">
+                  <div class="event"> {{game.event}} </div>
+                </div>
+                <div class="row">
+                  <div class="date"> {{game.date[:10]}} </div>
+                </div>
+                <div class="row"> 
+                  <hr class="thin">
+                </div>
+                <div class="row">
+                  <div class="termination"> {{game.termination}} </div>
+                </div>
+                <div class="row">
+                  <div class="time"> {{game.time|string + " min"}} </div>
+                </div>
+              </div>
+
+              <div class="col wrapper nogap participants">
+                <div class="row">
+
+                  <div class="col player"> 
+                    <div class="player-white"> 
+                      <img src="{{current_user.picture}}" alt="Avatar" class="row middle pic"> </img>
+                    </div>
+                    <div class="row middle player-username"> 
+
+                      {% if game.computer.color == "white" %}
+                        {{game.computer.username}}
+
+                      {% else %}
+                        {{game.human.username}}
+
+                      {% endif %}
+
+                    </div>
+                  </div>
+                  
+                  <div class="col row middle result">{{game.result}}</div>
+
+                  <div class="col player">
+                    <div class="player-black"> 
+                      <img src="{{current_user.picture}}" alt="Avatar" class="row middle pic"> </img>
+                    </div>
+                    <div class="row middle player-username"> 
+
+                      {% if game.computer.color == "black" %}
+                      {{game.computer.username}}
+
+                      {% else %}
+                        {{game.human.username}}
+
+                      {% endif %}
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="col wrapper nogap performance">
+                <div class="row">
+                  <div class="col">
+                    <div class="row middle"> Score</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          </a>
+        {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="row col" id="completed" style="padding-bottom: 20px;">
+      {% for game in games|reverse %}
+        <a href="/game/bot/{{game.id}}" class="item" title="{{game.date[:-3]}}">
 
           {% if game.result == "1-0" and game.human.color == "white" %}
           <div class="game-container win" id='{{game.id}}'>
@@ -310,8 +406,9 @@
                 <div class="row">
 
                   <div class="col player"> 
-                    <div class="row middle team"> White</div>
-                    <img src="static/images/avatar_placeholder.png" alt="Avatar" class="row middle pic"> </img>
+                    <div class="player-white"> 
+                      <img src="{{current_user.picture}}" alt="Avatar" class="row middle pic"> </img>
+                    </div>
                     <div class="row middle player-username"> 
 
                       {% if game.computer.color == "white" %}
@@ -327,9 +424,10 @@
                   
                   <div class="col row middle result">{{game.result}}</div>
 
-                  <div class="col player"> 
-                    <div class="row middle team"> Black</div>
-                    <img src="static/images/avatar_placeholder.png" alt="Avatar" class="row middle pic"> </img>
+                  <div class="col player">
+                    <div class="player-black"> 
+                      <img src="{{current_user.picture}}" alt="Avatar" class="row middle pic"> </img>
+                    </div>
                     <div class="row middle player-username"> 
 
                       {% if game.computer.color == "black" %}
@@ -356,10 +454,28 @@
 
             </div>
           </div>
-        </a>  
-      
-      {% endif %}
+        </a>
       {% endfor %}
+      </div>
+
+      <a href="/profile?display=40" class="item" id="more">
+        <div class="load-container">
+          <div class="wrapper">
+
+            SHOW MORE
+    
+          </div>
+        </div>
+      </a>
+
+      <div class="row col" id="total">
+        <div class="item right">
+          <div class="showing text">
+            (Displaying {{games|length}} of {{total}} finished games)
+          </div>
+        </div>
+      </div>
+    
       {% endif %}
 
     </div>
@@ -391,10 +507,6 @@
 
   </div>
 </div>
-
-
-
-
 
 
 {% endblock %}

@@ -25,6 +25,10 @@ hr.thin {
   display: none !important;
 }
 
+.scrollable {
+  overflow-y: auto;
+}
+
 .recent-container {
   background-color: #282727;
   border: 0px;
@@ -38,6 +42,16 @@ hr.thin {
 .helper-container {
   background-color: #A45A52;
   border: 0px;
+  border-radius: 8px;
+  padding: 20px 30px;
+  color: #FFFFFF;
+  flex-basis: 100%;
+  text-align: center;
+}
+
+.load-container {
+  background-color: #312E2B;
+  border: 1px;
   border-radius: 8px;
   padding: 20px 30px;
   color: #FFFFFF;
@@ -66,6 +80,28 @@ hr.thin {
   background-color: rgb(168, 168, 168);
 }
 
+.ongoing {
+  background: linear-gradient(-45deg, #ee9b00, #cdb4db, #348aa7, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+.ongoing .indent {
+  background: linear-gradient(-45deg, #ee9b00, #cdb4db, #348aa7, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 .game-container {
   border: 0px;
   border-radius: 8px;
@@ -83,9 +119,7 @@ hr.thin {
 .game-container .participants {
   flex: 100;
   align-self: stretch;
-}
-.game-container .participants .row {
-  height: 100%;
+  align-items: center;
 }
 .game-container .participants .result {
   flex-basis: 20%;
@@ -95,9 +129,9 @@ hr.thin {
   justify-content: center;
 }
 .game-container .performance .row {
+  height: 100%;
   background-color: black;
   padding: 10px;
-  height: 100%;
 }
 .game-container .wrapper {
   padding: 20px 30px 20px 10px;
@@ -122,14 +156,22 @@ hr.thin {
   font-size: small;
 }
 .game-container .wrapper .player {
-  height: 100%;
   font-size: small;
   display: flex;
   align-items: center;
   flex-basis: 40%;
+  gap: 8px;
 }
 .game-container .wrapper .player .team {
   font-size: small;
+}
+.game-container .wrapper .player .player-white {
+  border-top: 3px solid white;
+  padding-top: 5px;
+}
+.game-container .wrapper .player .player-black {
+  border-top: 3px solid black;
+  padding-top: 5px;
 }
 .game-container .wrapper .player .pic {
   height: 32px;
@@ -163,9 +205,9 @@ hr.thin {
 }
 .container .wrapper {
   display: flex;
+  align-items: stretch;
   flex-direction: column;
   gap: 30px;
-  height: 100%;
 }
 .container .wrapper .col {
   flex-direction: column !important;
@@ -199,6 +241,10 @@ hr.thin {
   height: 200px;
   width: 200px;
   border-radius: 50%;
+}
+.container .wrapper .row .item .showing {
+  padding-top: 10px;
+  opacity: 0.7;
 }
 .container .wrapper .row .item .username {
   font-size: x-large;
