@@ -218,17 +218,17 @@
                 <div class="row col">
                   <div class="row">
                     <div class="item middle">
-                      <button class="filter-btn selected-btn" id="toggle-all" onclick="toggle_select(this.id)">
+                      <button class="filter-btn selected-btn" id="toggle-all">
                         <div class="text"> All</div> 
                       </button>
                     </div>
                     <div class="item middle">
-                      <button class="filter-btn" id="toggle-friends" onclick="toggle_select(this.id)">
+                      <button class="filter-btn" id="toggle-friends">
                         <div class="text"> Friends only</div> 
                       </button>
                     </div>
                     <div class="item middle">
-                      <button class="filter-btn" id="toggle-bots" onclick="toggle_select(this.id)">
+                      <button class="filter-btn" id="toggle-bots">
                         <div class="text"> Bots only</div> 
                       </button>
                     </div>
@@ -236,22 +236,22 @@
   
                   <div class="row">
                     <div class="item middle">
-                      <button class="filter-btn" id="toggle-1minute" onclick="toggle_select(this.id)">
+                      <button class="filter-btn" id="toggle-1minute">
                         <div class="text"> 1 min</div> 
                       </button>
                     </div>
                     <div class="item middle">
-                      <button class="filter-btn" id="toggle-3minute" onclick="toggle_select(this.id)">
+                      <button class="filter-btn" id="toggle-3minute">
                         <div class="text"> 3 min</div> 
                       </button>
                     </div>
                     <div class="item middle">
-                      <button class="filter-btn" id="toggle-5minute" onclick="toggle_select(this.id)">
+                      <button class="filter-btn" id="toggle-5minute">
                         <div class="text"> 5 min</div> 
                       </button>
                     </div>
                     <div class="item middle">
-                      <button class="filter-btn" id="toggle-10minute" onclick="toggle_select(this.id)">
+                      <button class="filter-btn" id="toggle-10minute">
                         <div class="text"> 10 min</div> 
                       </button>
                     </div>
@@ -362,7 +362,7 @@
         </div>
       {% endif %}
 
-      <div class="row col" id="completed" style="padding-bottom: 20px;">
+      <div class="row col" id="completed"  style="padding-bottom: 20px;">
       {% for game in games|reverse %}
         <a href="/game/bot/{{game.id}}" class="item" title="{{game.date[:-3]}}">
 
@@ -458,9 +458,9 @@
       {% endfor %}
       </div>
 
-      <a href="/profile?display=40" class="item" id="more">
+      <a href="" class="item" id="more">
         <div class="load-container">
-          <div class="wrapper">
+          <div class="wrapper"> 
 
             SHOW MORE
     
@@ -470,9 +470,15 @@
 
       <div class="row col" id="total">
         <div class="item right">
+
+          {% if games|length > 0 %}
+          
           <div class="showing text">
             (Displaying {{games|length}} of {{total}} finished games)
           </div>
+
+          {% endif %}
+
         </div>
       </div>
     

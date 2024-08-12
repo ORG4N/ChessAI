@@ -1,60 +1,53 @@
 window.addEventListener('load', function () {
 
-    // Set the href for Show More button to reload the page with 20 more results
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    let display = 20;
+    // URL and params
+    let url = new URL(window.location.href);
+    let params = new URLSearchParams(url.search);
 
-    // On load, check for display param to calculate next display value.
-    if (params.has('display')){
-
-        display = parseInt(params.get("display"));
-        if (display < 20 || isNaN(display)){
-            display = 20;
-        }
-    }
-
-    display += 20;
-    params.set('display', display);
-    document.getElementById("more").href = '/profile?' + params.toString();
-
-    console.log(params)
-
-    // On load, check for filter param to apply to all searched games.
-    if (params.has('filter')){
-        const filter = "toggle-" + params.get('filter');
-        toggle_select(filter)
-    }
-
-
-    // Initialise donut
+    // Set donut values and find element ID
     const donut = document.getElementById('donut');
     let won = 0;
     let lost = 0;
     let drawn = 0;
 
-    // Find all divs representing games played.
-    const completed = document.getElementById("completed");
-    const children = completed.children;
+    // Total count of all games user has finished
+    const total = sessionStorage.getItem("total");
 
-    let total = sessionStorage.getItem("total");
-    if(children.length >= total){ document.getElementById('more').remove(); }
+    // Only do this stuff if games are being displayed
+    if (total){
 
-    // Only need to iterate over the most recent 20 games, but it is possible for there to be less than 20 games in total so decide which number is less to avoid index errors  
-    let recent = 20;
-    if (children.length < recent){recent = children.length;}
+        // Find all divs representing games played.
+        const completed = document.getElementById("completed");
+        const children = completed.children;
 
-    for(let i=0; i<recent; i++){
-        let child = children[i];
+        // If all games are displayed, remove show more button
+        if(children.length >= total){ document.getElementById('more').remove(); }
 
-        if(child.children[0].classList.contains("lose")){ lost++;}
-        else if(child.children[0].classList.contains("win")){ won++;}
-        else {drawn++;}
+        // Only need to iterate over the most recent 20 games, but it is possible for there to be less than 20 games in total so decide which number is less to avoid index errors  
+        let recent = 20;
+        if (children.length < recent){recent = children.length;}
+
+        for(let i=0; i<recent; i++){
+            let child = children[i];
+
+            if(child.children[0].classList.contains("lose")){ lost++;}
+            else if(child.children[0].classList.contains("win")){ won++;}
+            else {drawn++;}
+        }
+
+        document.getElementById("win-lose").innerText = won + "W " + lost + "L " + drawn + "D";
+
+        // If there is a current filter then apply filters. Used incase of refresh.
+        if(params.has('filter')){
+            const button_id = "toggle-" + params.get('filter')
+            const element = document.getElementById(button_id)
+            filter_content(element)
+        }
+
+
     }
 
-    document.getElementById("win-lose").innerText = won + "W " + lost + "L " + drawn + "D";
-
-
+    // Chart.js initialising data for donut
     data = {
         datasets: [{
             data: [won,lost,drawn],
@@ -71,6 +64,7 @@ window.addEventListener('load', function () {
         ]
     };
 
+    // Chart.js setting donut settings
     var chart = new Chart(donut, {
         type: "doughnut",
         data: data,
@@ -88,15 +82,16 @@ window.addEventListener('load', function () {
         }
     });
 
+
+    // For history, badges, friends elements create click event listener to update style + content
     const sections = ["history", "badges", "friends"];
 
     for (var i=0; i<sections.length; i++){
 
-        const section = sections[i];
-        const button_id = section + "-btn";
+        const button_id = sections[i] + "-btn";
         const button = document.getElementById(button_id);
 
-        button.addEventListener('click', function(){
+        button.addEventListener('click', function() {
             // Change the styling of the nav button on the container
             selected(button);
         
@@ -105,22 +100,49 @@ window.addEventListener('load', function () {
         });
     }
 
-    const filters = document.getElementsByClassName("filter-btn")
-    
+    // For following filters create click event listener to update url param
+    const filters = ["all", "friends", "bots", "1minute", "3minute", "5minute", "10minute"];
     for (var i=0; i<filters.length; i++){
 
-        const button = filters[i]
+        const filter = filters[i];
+        const button_id = "toggle-" + filter;
+        const button = document.getElementById(button_id);
 
-        button.addEventListener('click', function(){
-            selected_filter(button)
-        })
+        button.addEventListener('click', function() {
+
+            filter_style(button);       // Changes the styling of the filter button
+            filter_content(button);      // Changes the content displayed according to selected filter
+            filter_url(url, filter);      // Appends the current filter to the URL
+
+        });
     }
 
+    const button = document.getElementById('more')
+
+    if (button){
+        button.addEventListener('click', function() {
+
+            let display = Number(params.get("display"));               // Read params for display count
+            if (isNaN(display) || display < 20){ display = 20; }      // If not found, set to default.
+            display = display + 20;                                    // Increment by 20 to show 20 more results
+
+            // Create new url and set calculated display as a param
+            let new_url = new URL(window.location.href);
+            new_url.searchParams.set('display', display);
+
+            // Set new url to href value of button - redirects to new url page
+            button.href = new_url;
+            alert(button.href)
+
+        });
+    }
+    
+    // Update profile every 15 seconds
     setInterval(update_current_profile, 1000 * 60 * 0.25); // Interval read in miliseconds - so we convert minutes to miliseconds
 
+});
 
-})
-
+// Update profile data on page
 function update_current_profile() {
     $.ajax({
       url: '/update',
@@ -132,43 +154,47 @@ function update_current_profile() {
             const element = document.getElementById(key)
 
             if (key == "avatar"){
-                element.title = value
+                element.title = value;
             }
 
             else {
-                element.innerText = value
+                element.innerText = value;
             }
 
         }
 
       }
     });
-  }
+}
 
-function selected_filter(clicked){
+// Adding filter to URL parameter
+function filter_url(url, new_param){
+
+    // Will overwrite filter if existing or add new para,
+    url.searchParams.set('filter', new_param)
+
+    // Overwrite href of Show More button so when redirected, filters are still applied
+    const element = document.getElementById("more");
+    if (element) {element.href = url;}
+
+    // Append params to URL in browser
+    const params = '?' + url.searchParams.toString();
+    window.history.replaceState(null, null, params);
+
+}
+
+// Highlight selected filter button
+function filter_style(button){
 
     for(const selected of document.getElementsByClassName("selected-btn")){
         selected.classList.remove("selected-btn")
     }
 
-    clicked.classList.add("selected-btn")
-
+    button.classList.add("selected-btn")
 }
 
-function toggle_select(button){
-
-    // Extract appropriate filter name from button id.
-    const filter_name = button.split('-').pop();
-
-    // Get current URL then either overwrite or append new filter.
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    
-    params.set('filter', filter_name);
-
-    // Add new url to href field of the show more button so when user loads more search results, the same filters are applied.
-    const button_element = document.getElementById("more");
-    if (button_element !== null){ button_element.href = url + '&filter=3min';} !!!!!
+// Hide/Display content according to selected filter
+function filter_content(button){
 
     // Element that contains all completed games to filter.
     const container = document.getElementById("completed");
@@ -184,24 +210,23 @@ function toggle_select(button){
     const count = document.getElementById("total");
     count.classList.add("hidden");
 
-    // Show all games.
-    if (button == 'toggle-all'){
+    // Show all games -- All games will already be shown but we can unhide count of how many elements are bein shown
+    if (button.id == 'toggle-all'){
         count.classList.remove("hidden");
     }
 
     // Show all games with Human players.
-    if (button == 'toggle-friends'){
+    if (button.id == 'toggle-friends'){
         for (game of children){
             const event = game.querySelectorAll(".event");
             if (event[0].innerText != 'PLAYER MATCH'){
                 game.classList.add('hidden');
             }
         }
-
     }
 
     // Show all games with Bot players.
-    if (button == 'toggle-bots'){
+    if (button.id == 'toggle-bots'){
         for (game of children){
             const event = game.querySelectorAll(".event");
             if (event[0].innerText != 'BOT MATCH'){
@@ -212,7 +237,7 @@ function toggle_select(button){
     }
 
     // Show all games where game length is 1 minute.
-    if (button == 'toggle-1minute'){
+    if (button.id == 'toggle-1minute'){
         for (game of children){
             const time = game.querySelectorAll(".time");
             if (time[0].innerText != '1 min'){
@@ -222,7 +247,8 @@ function toggle_select(button){
     }
 
     // Show all games where game length is 3 minutes.
-    if (button == 'toggle-3minute'){
+    if (button.id == 'toggle-3minute'){
+        button.classList.add("selected-btn")
         for (game of children){
             const time = game.querySelectorAll(".time");
             if (time[0].innerText != '3 min'){
@@ -232,7 +258,7 @@ function toggle_select(button){
     }
     
     // Show all games where game length is 5 minutes.
-    if (button == 'toggle-5minute'){
+    if (button.id == 'toggle-5minute'){
         for (game of children){
             const time = game.querySelectorAll(".time");
             if (time[0].innerText != '5 min'){
@@ -242,7 +268,7 @@ function toggle_select(button){
     }
 
     // Show all games where game length is 10 minutes.
-    if (button == 'toggle-10minute'){
+    if (button.id == 'toggle-10minute'){
         for (game of children){
             const time = game.querySelectorAll(".time");
             if (time[0].innerText != '10 min'){
@@ -272,7 +298,6 @@ function content(clicked){
 function selected(clicked){
     
     // Remove selected from all button elements
-
     const btns = clicked.parentElement.children;
     
     for (var i=0; i<btns.length; i++){
@@ -283,7 +308,7 @@ function selected(clicked){
         }
     }
 
-    // Add se;ected to the button element pressed.
+    // Add selected to the button element pressed.
     clicked.classList.add("selected");
 }
 
